@@ -2,14 +2,14 @@
 
 namespace App\Entity;
 
-use App\Repository\UserStatusRepository;
+use App\Repository\StickerRepository;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * @ORM\Entity(repositoryClass=UserStatusRepository::class)
- * @ORM\Table(name="user_statuses")
+ * @ORM\Entity(repositoryClass=StickerRepository::class)
+ * @ORM\Table(name="stickers")
  */
-class UserStatus
+class Sticker
 {
     /**
      * @ORM\Id
@@ -22,6 +22,16 @@ class UserStatus
      * @ORM\Column(type="string", length=64)
      */
     private $name;
+
+    /**
+     * @ORM\Column(type="integer")
+     */
+    private $coefficient;
+
+    /**
+     * @ORM\Column(type="integer")
+     */
+    private $chance;
 
     /**
      * @ORM\Column(type="datetime_immutable", options={"default" : "CURRENT_TIMESTAMP"})
@@ -46,6 +56,30 @@ class UserStatus
     public function setName(string $name): self
     {
         $this->name = $name;
+
+        return $this;
+    }
+
+    public function getCoefficient(): ?int
+    {
+        return $this->coefficient;
+    }
+
+    public function setCoefficient(int $coefficient): self
+    {
+        $this->coefficient = $coefficient;
+
+        return $this;
+    }
+
+    public function getChance(): ?int
+    {
+        return $this->chance;
+    }
+
+    public function setChance(int $chance): self
+    {
+        $this->chance = $chance;
 
         return $this;
     }

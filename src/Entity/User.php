@@ -197,4 +197,12 @@ class User
     {
         $this->role = $role;
     }
+
+    /**
+     * @ORM\PreUpdate
+     */
+    public function preUpdate(): void
+    {
+        $this->setUpdatedAt(new \DateTimeImmutable('now'));
+    }
 }
