@@ -1,6 +1,11 @@
 security:
     enable_authenticator_manager: true
-    # ...
+
+    providers:
+        users:
+            entity:
+                class: 'App\Entity\User'
+                property: 'username'
 
     firewalls:
         login:
