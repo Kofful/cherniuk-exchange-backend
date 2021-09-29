@@ -19,7 +19,6 @@ final class Version20210928134954 extends AbstractMigration
 
     public function up(Schema $schema): void
     {
-        // this up() migration is auto-generated, please modify it to your needs
         $this->addSql('CREATE TABLE inventory_items (id INT AUTO_INCREMENT NOT NULL, sticker_id INT NOT NULL, owner_id INT NOT NULL, created_at DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL COMMENT \'(DC2Type:datetime_immutable)\', updated_at DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL COMMENT \'(DC2Type:datetime_immutable)\', INDEX IDX_3D82424D7E3C61F9 (owner_id), INDEX IDX_3D82424D4D965A4D (sticker_id), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
         $this->addSql('CREATE TABLE offer_items (id INT AUTO_INCREMENT NOT NULL, offer_id INT NOT NULL, sticker_id INT NOT NULL, is_accept TINYINT(1) NOT NULL, created_at DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL COMMENT \'(DC2Type:datetime_immutable)\', updated_at DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL COMMENT \'(DC2Type:datetime_immutable)\', INDEX IDX_623394A453C674EE (offer_id), INDEX IDX_623394A44D965A4D (sticker_id), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
         $this->addSql('CREATE TABLE offer_statuses (id INT AUTO_INCREMENT NOT NULL, name VARCHAR(64) NOT NULL, created_at DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL COMMENT \'(DC2Type:datetime_immutable)\', updated_at DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL COMMENT \'(DC2Type:datetime_immutable)\', PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
@@ -45,7 +44,6 @@ final class Version20210928134954 extends AbstractMigration
 
     public function down(Schema $schema): void
     {
-        // this down() migration is auto-generated, please modify it to your needs
         $this->addSql('ALTER TABLE offers DROP FOREIGN KEY FK_DA4604276BF700BD');
         $this->addSql('ALTER TABLE offer_items DROP FOREIGN KEY FK_623394A453C674EE');
         $this->addSql('ALTER TABLE users DROP FOREIGN KEY FK_1483A5E9D60322AC');
