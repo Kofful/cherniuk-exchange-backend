@@ -2,15 +2,23 @@
 
 namespace App\Entity;
 
+use App\Repository\RoleRepository;
 use App\Repository\UserRepository;
+use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\ORM\Mapping\UniqueConstraint;
 
 /**
  * @ORM\Entity(repositoryClass=UserRepository::class)
  * @ORM\Table(name="users")
+ * @UniqueEntity(fields="username", message="Username is already taken")
+ * @UniqueEntity(fields="email", message="Email is already taken")
  */
 class User
 {
+    public const DEFAULT_ROLE_ID = 1;
+    public const DEFAULT_STATUS_ID = 1;
     /**
      * @ORM\Id
      * @ORM\GeneratedValue
@@ -19,22 +27,35 @@ class User
     private $id;
 
     /**
-     * @ORM\Column(type="string", length=64)
+     * @ORM\Column(type="string", length=64, unique=true)
+     * @Assert\NotBlank(
+     *     message = "Username is required."
+     * )
+     * @Assert\Length(min=3)
      */
     private $username;
 
     /**
-     * @ORM\Column(type="string", length=255)
+     * @ORM\Column(type="string", length=255, unique=true)
+     * @Assert\NotBlank(
+     *     message = "Email is Required"
+     * )
+     * @Assert\Email(
+     *     message = "Email is not valid."
+     * )
      */
     private $email;
 
     /**
      * @ORM\Column(type="string", length=256)
+     * @Assert\NotBlank(
+     *     message = "Password is required."
+     * )
      */
     private $password;
 
     /**
-     * @ORM\Column(type="integer", options={"default" : "0"})
+     * @ORM\Column(type="integer", options={"default" : 0})
      */
     private $wallet;
 
@@ -74,6 +95,13 @@ class User
      * @ORM\JoinColumn(name="status_id", referencedColumnName="id")
      */
     private $status;
+
+    public function __construct()
+    {
+        $this->setWallet(0);
+        $this->setCreatedAt(new \DateTimeImmutable("now"));
+        $this->setUpdatedAt(new \DateTimeImmutable("now"));
+    }
 
     public function getId(): ?int
     {
@@ -196,6 +224,16 @@ class User
     public function setRole($role): void
     {
         $this->role = $role;
+    }
+
+    public function getStatus()
+    {
+        return $this->status;
+    }
+
+    public function setStatus($status): void
+    {
+        $this->status = $status;
     }
 
     /**
