@@ -3,7 +3,13 @@
 #    controller: App\Controller\DefaultController::index
 api_login_check:
   path: /api/login_check
+
 register:
   path: /api/register
   controller: App\Controller\RegisterController::index
   methods: POST
+
+confirm:
+  path: /api/confirm
+  controller: App\Controller\RegisterController::confirm
+  methods: GET

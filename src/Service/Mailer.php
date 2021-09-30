@@ -1,21 +1,23 @@
 <?php
 
-namespace App\Service\Mailer;
+namespace App\Service;
 
 use App\Entity\User;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Mime\Email;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
-class UserMailer
+class Mailer
 {
-    public function sendEmail(MailerInterface $mailer, User $user)
+
+    public function sendConfirmationEmail(MailerInterface $mailer, string $confirmPath, User $user)
     {
         $email = (new Email())
             ->from('vlad26v03@gmail.com')
             ->to($user->getEmail())
             ->subject('Email confirmation')
             ->text('Hello, ' . $user->getUsername() . '!')
-            ->html('<p>Confirm registration on Exchange by clicking on <a href="'. $_ENV["APP_DOMAIN"] . '/confirm?code=' . $user->getPassword() . '">this</a> link!<br></p>');
+            ->html('<p>Confirm registration on Exchange by clicking on <a href="'. $confirmPath . '">this</a> link!<br></p>');
 
         $mailer->send($email);
     }

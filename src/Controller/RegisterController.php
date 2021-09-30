@@ -5,13 +5,15 @@ namespace App\Controller;
 use App\Entity\Role;
 use App\Entity\User;
 use App\Entity\UserStatus;
-use App\Service\Mailer\UserMailer;
+use App\Service\Mailer;
 use App\Service\Mapper\UserMapper;
 use App\Service\Validator\UserValidator;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Mailer\MailerInterface;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 
@@ -44,11 +46,24 @@ class RegisterController extends AbstractController
             $entityManager->persist($user);
             $entityManager->flush();
 
-            (new UserMailer())->sendEmail($mailer, $user);
+            (new Mailer())->sendConfirmationEmail(
+                $mailer,
+                $this->generateUrl(
+                    "confirm", ["code" => $user->getPassword(), "uid" => $user->getId()], UrlGeneratorInterface::ABSOLUTE_URL
+                ),
+                $user);
 
             $response["code"] = 200;
         }
 
         return $this->json($response);
+    }
+
+    /**
+     * @Route("/api/confirm", name="confirm")
+     */
+    public function confirmRegistration(Request $request): Response
+    {
+        return $this->json(["code"=>"200"]);
     }
 }
