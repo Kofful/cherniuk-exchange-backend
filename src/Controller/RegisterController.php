@@ -5,12 +5,13 @@ namespace App\Controller;
 use App\Entity\Role;
 use App\Entity\User;
 use App\Entity\UserStatus;
+use App\Service\Mailer\UserMailer;
 use App\Service\Mapper\UserMapper;
 use App\Service\Validator\UserValidator;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 
@@ -19,7 +20,7 @@ class RegisterController extends AbstractController
     /**
      * @Route("/api/register", name="register")
      */
-    public function index(ValidatorInterface $validator): Response
+    public function index(ValidatorInterface $validator, MailerInterface $mailer): Response
     {
         $response = [];
         $request = Request::createFromGlobals();
@@ -42,6 +43,9 @@ class RegisterController extends AbstractController
             $entityManager = $doctrine->getManager();
             $entityManager->persist($user);
             $entityManager->flush();
+
+            (new UserMailer())->sendEmail($mailer, $user);
+
             $response["code"] = 200;
         }
 
