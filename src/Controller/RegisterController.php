@@ -11,6 +11,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 
 class RegisterController extends AbstractController
@@ -18,14 +19,14 @@ class RegisterController extends AbstractController
     /**
      * @Route("/api/register", name="register")
      */
-    public function index(): Response
+    public function index(ValidatorInterface $validator): Response
     {
         $response = [];
         $request = Request::createFromGlobals();
         $post = $request->toArray();
 
         $user = (new UserMapper())->map($post);
-        $errors = (new UserValidator())->validate($user);
+        $errors = (new UserValidator())->validate($validator, $user);
 
         if(count($errors) > 0) {
             $response["code"] = 400;

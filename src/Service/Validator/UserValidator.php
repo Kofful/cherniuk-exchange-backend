@@ -3,14 +3,15 @@
 namespace App\Service\Validator;
 
 use App\Entity\User;
+use Symfony\Component\Validator\Constraints\Valid;
 use Symfony\Component\Validator\Validation;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class UserValidator
 {
-    public function validate(User $user): array
+    public function validate(ValidatorInterface $validator, User $user): array
     {
         $result = [];
-        $validator = Validation::createValidator();
         $errors = $validator->validate($user);
 
         if (count($errors) > 0) {

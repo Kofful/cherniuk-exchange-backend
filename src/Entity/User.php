@@ -31,14 +31,14 @@ class User
      * @Assert\NotBlank(
      *     message = "Username is required."
      * )
-     * @Assert\Length(min=3)
+     * @Assert\Length(min=3, minMessage="Username must be longer than 3 characters.")
      */
     private $username;
 
     /**
      * @ORM\Column(type="string", length=255, unique=true)
      * @Assert\NotBlank(
-     *     message = "Email is Required"
+     *     message = "Email is required."
      * )
      * @Assert\Email(
      *     message = "Email is not valid."
