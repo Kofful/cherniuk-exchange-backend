@@ -11,6 +11,7 @@ use App\Service\Validator\RegistrationValidator;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
@@ -19,6 +20,12 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class RegistrationController extends AbstractController
 {
+    private $passwordHasher;
+
+    public function __construct(UserPasswordHasherInterface $passwordHasher)
+    {
+        $this->passwordHasher = $passwordHasher;
+    }
     /**
      * @Route("/api/register", name="register")
      */
@@ -37,6 +44,7 @@ class RegistrationController extends AbstractController
         } else {
             $doctrine = $this->getDoctrine();
 
+            $user->setPassword($this->passwordHasher->hashPassword($user, $user->getPassword()));
             $role = $doctrine->getRepository(Role::class)->find(User::DEFAULT_ROLE_ID);
             $user->setRole($role);
             $status = $doctrine->getRepository(UserStatus::class)->find(User::DEFAULT_STATUS_ID);

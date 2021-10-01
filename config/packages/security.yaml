@@ -1,6 +1,10 @@
 security:
     enable_authenticator_manager: true
 
+    password_hashers:
+        App\Entity\User:
+            algorithm: sha256
+
     providers:
         users:
             entity:
@@ -30,7 +34,7 @@ security:
             stateless: true
 
     access_control:
-        - { path: ^/api/login, roles: PUBLIC_ACCESS }
+        - { path: ^/api/login, roles: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/api/register, roles: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/api/confirm, roles: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/api,       roles: IS_AUTHENTICATED_FULLY }

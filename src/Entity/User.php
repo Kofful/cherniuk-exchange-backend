@@ -4,6 +4,8 @@ namespace App\Entity;
 
 use App\Repository\RoleRepository;
 use App\Repository\UserRepository;
+use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
+use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Doctrine\ORM\Mapping as ORM;
@@ -15,7 +17,7 @@ use Doctrine\ORM\Mapping\UniqueConstraint;
  * @UniqueEntity(fields="username", message="Username is already taken")
  * @UniqueEntity(fields="email", message="Email is already taken")
  */
-class User
+class User implements PasswordAuthenticatedUserInterface, UserInterface
 {
     public const DEFAULT_ROLE_ID = 1;
     public const ADMIN_ROLE_ID = 2;
@@ -245,5 +247,20 @@ class User
     public function preUpdate(): void
     {
         $this->setUpdatedAt(new \DateTimeImmutable('now'));
+    }
+
+    public function getRoles()
+    {
+        return [];
+    }
+
+    public function getSalt()
+    {
+        return null;
+    }
+
+    public function eraseCredentials()
+    {
+
     }
 }

@@ -14,7 +14,3 @@ confirm:
   controller: App\Controller\RegistrationController::confirmRegistration
   methods: GET
 
-login:
-  path: /api/login
-  controller: App\Controller\RegisterController::confirmRegistration
-  methods: POST

@@ -11,7 +11,7 @@ class UserMapper
         $user = new User();
         $user->setUsername($source["username"] ?? "");
         $user->setEmail($source["email"] ?? "");
-        $user->setPassword( isset($source["password"]) && isset($source["username"]) ? hash("sha256", $source["password"] . $source["username"]) : "");
+        $user->setPassword( $source["password"] ?? "");
 
         return $user;
     }
