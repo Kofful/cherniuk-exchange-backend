@@ -2,7 +2,7 @@ framework:
     router:
         utf8: true
 
-        default_uri: http://cherniuk-exchange
+        default_uri: '%env(DEFAULT_URI)%'
 
 when@prod:
     framework:
