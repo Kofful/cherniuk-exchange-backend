@@ -43,8 +43,8 @@ class RegistrationValidator
         if(!isset($user)) {
             array_push($errors, "User not found.");
         }
-        if($user->getPassword() != $code) {
-            array_push($errors, "Wrong query code.");
+        if($user->getConfirmationCode() != $code) {
+            array_push($errors, "Wrong confirmation code.");
         }
 
         return $errors;

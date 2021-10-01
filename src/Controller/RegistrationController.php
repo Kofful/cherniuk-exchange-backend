@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\Role;
 use App\Entity\User;
 use App\Entity\UserStatus;
+use App\Service\CodeGenerator;
 use App\Service\Mailer;
 use App\Service\Mapper\UserMapper;
 use App\Service\Validator\RegistrationValidator;
@@ -49,6 +50,7 @@ class RegistrationController extends AbstractController
             $user->setRole($role);
             $status = $doctrine->getRepository(UserStatus::class)->find(User::DEFAULT_STATUS_ID);
             $user->setStatus($status);
+            $user->setConfirmationCode((new CodeGenerator())->generate());
 
             $entityManager = $doctrine->getManager();
             $entityManager->persist($user);
@@ -56,7 +58,7 @@ class RegistrationController extends AbstractController
 
             (new Mailer())->sendConfirmationEmail(
                 $mailer,
-                $_ENV["FRONTEND_DOMAIN"] . "/confirm?code={$user->getPassword()}&uid={$user->getId()}",
+                $_ENV["FRONTEND_DOMAIN"] . "/confirm?code={$user->getConfirmationCode()}&uid={$user->getId()}",
                 $user);
 
             $response["code"] = 200;
@@ -88,6 +90,7 @@ class RegistrationController extends AbstractController
             } else {
                 $status = $doctrine->getRepository(UserStatus::class)->find(User::CONFIRMED_STATUS_ID);
                 $user->setStatus($status);
+                $user->setConfirmationCode("");
 
                 $entityManager = $doctrine->getManager();
                 $entityManager->persist($user);

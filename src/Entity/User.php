@@ -65,6 +65,11 @@ class User implements PasswordAuthenticatedUserInterface, UserInterface
     private $wallet;
 
     /**
+     * @ORM\Column(type="string", length=64, nullable=true)
+     */
+    private $confirmation_code;
+
+    /**
      * @ORM\Column(type="integer")
      */
     private $role_id;
@@ -159,6 +164,22 @@ class User implements PasswordAuthenticatedUserInterface, UserInterface
         $this->wallet = $wallet;
 
         return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getConfirmationCode()
+    {
+        return $this->confirmation_code;
+    }
+
+    /**
+     * @param mixed $confirmation_code
+     */
+    public function setConfirmationCode($confirmation_code): void
+    {
+        $this->confirmation_code = $confirmation_code;
     }
 
     public function getRoleId(): ?int
