@@ -63,26 +63,17 @@ class RegistrationController extends AbstractController
     public function confirmRegistration(Request $request): Response
     {
         $response = [];
-        $errors = [];
+
         $query = $request->query->all();
-        if(!isset($query["code"])) {
-            array_push($errors, "Confirmation code was not passed.");
-        }
-        if(!isset($query["uid"])) {
-            array_push($errors, "UID was not passed.");
-        }
+        $errors = (new RegistrationValidator())->validateConfirmation($query);
+
         if(count($errors) > 0) {
             $response["code"] = 400;
             $response["messages"] = $errors;
         } else {
             $doctrine = $this->getDoctrine();
             $user = $doctrine->getRepository(User::class)->find($query["uid"]);
-            if(!isset($user)) {
-                array_push($errors, "User not found.");
-            }
-            if($user->getPassword() != $query["code"]) {
-                array_push($errors, "Wrong query code.");
-            }
+            $errors = (new RegistrationValidator())->validateConfirmedUser($user, $query["code"]);
             if(count($errors) > 0) {
                 $response["code"] = 400;
                 $response["messages"] = $errors;
