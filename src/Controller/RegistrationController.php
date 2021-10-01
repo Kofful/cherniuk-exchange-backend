@@ -7,7 +7,7 @@ use App\Entity\User;
 use App\Entity\UserStatus;
 use App\Service\Mailer;
 use App\Service\Mapper\UserMapper;
-use App\Service\Validator\UserValidator;
+use App\Service\Validator\RegistrationValidator;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -17,7 +17,7 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 
-class RegisterController extends AbstractController
+class RegistrationController extends AbstractController
 {
     /**
      * @Route("/api/register", name="register")
@@ -29,7 +29,7 @@ class RegisterController extends AbstractController
         $post = $request->toArray();
 
         $user = (new UserMapper())->map($post);
-        $errors = (new UserValidator())->validate($validator, $user);
+        $errors = (new RegistrationValidator())->validateUser($validator, $user);
 
         if(count($errors) > 0) {
             $response["code"] = 400;

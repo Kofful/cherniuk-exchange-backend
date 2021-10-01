@@ -7,9 +7,9 @@ use Symfony\Component\Validator\Constraints\Valid;
 use Symfony\Component\Validator\Validation;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
-class UserValidator
+class RegistrationValidator
 {
-    public function validate(ValidatorInterface $validator, User $user): array
+    public function validateUser(ValidatorInterface $validator, User $user): array
     {
         $result = [];
         $errors = $validator->validate($user);

@@ -6,10 +6,15 @@ api_login_check:
 
 register:
   path: /api/register
-  controller: App\Controller\RegisterController::index
+  controller: App\Controller\RegistrationController::index
   methods: POST
 
 confirm:
   path: /api/confirm
-  controller: App\Controller\RegisterController::confirmRegistration
+  controller: App\Controller\RegistrationController::confirmRegistration
   methods: GET
+
+login:
+  path: /api/login
+  controller: App\Controller\RegisterController::confirmRegistration
+  methods: POST
