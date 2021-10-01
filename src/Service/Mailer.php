@@ -20,7 +20,7 @@ class Mailer
     public function sendConfirmationEmail(MailerInterface $mailer, string $confirmPath, User $user)
     {
         $email = (new Email())
-            ->from('vlad26v03@gmail.com')
+            ->from($_ENV["MAILER_FROM"])
             ->to($user->getEmail())
             ->subject('Email confirmation')
             ->html('<h3>Hello, ' . $user->getUsername() . '!</h3>
