@@ -48,9 +48,7 @@ class RegisterController extends AbstractController
 
             (new Mailer())->sendConfirmationEmail(
                 $mailer,
-                $this->generateUrl(
-                    "confirm", ["code" => $user->getPassword(), "uid" => $user->getId()], UrlGeneratorInterface::ABSOLUTE_URL
-                ),
+                $_ENV["FRONTEND_DOMAIN"] . "/confirm?code={$user->getPassword()}&uid={$user->getId()}",
                 $user);
 
             $response["code"] = 200;
@@ -64,6 +62,41 @@ class RegisterController extends AbstractController
      */
     public function confirmRegistration(Request $request): Response
     {
-        return $this->json(["code"=>"200"]);
+        $response = [];
+        $errors = [];
+        $query = $request->query->all();
+        if(!isset($query["code"])) {
+            array_push($errors, "Confirmation code was not passed.");
+        }
+        if(!isset($query["uid"])) {
+            array_push($errors, "UID was not passed.");
+        }
+        if(count($errors) > 0) {
+            $response["code"] = 400;
+            $response["messages"] = $errors;
+        } else {
+            $doctrine = $this->getDoctrine();
+            $user = $doctrine->getRepository(User::class)->find($query["uid"]);
+            if(!isset($user)) {
+                array_push($errors, "User not found.");
+            }
+            if($user->getPassword() != $query["code"]) {
+                array_push($errors, "Wrong query code.");
+            }
+            if(count($errors) > 0) {
+                $response["code"] = 400;
+                $response["messages"] = $errors;
+            } else {
+                $status = $doctrine->getRepository(UserStatus::class)->find(User::CONFIRMED_STATUS_ID);
+                $user->setStatus($status);
+
+                $entityManager = $doctrine->getManager();
+                $entityManager->persist($user);
+                $entityManager->flush();
+
+                $response["code"] = 200;
+            }
+        }
+        return $this->json($response);
     }
 }

@@ -25,7 +25,12 @@ security:
             pattern: ^/api/register
             stateless: true
 
+        confirm:
+            pattern: ^/api/confirm
+            stateless: true
+
     access_control:
         - { path: ^/api/login, roles: PUBLIC_ACCESS }
         - { path: ^/api/register, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/api/confirm, roles: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/api,       roles: IS_AUTHENTICATED_FULLY }

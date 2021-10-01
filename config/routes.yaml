@@ -11,5 +11,5 @@ register:
 
 confirm:
   path: /api/confirm
-  controller: App\Controller\RegisterController::confirm
+  controller: App\Controller\RegisterController::confirmRegistration
   methods: GET

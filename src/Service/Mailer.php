@@ -16,8 +16,8 @@ class Mailer
             ->from('vlad26v03@gmail.com')
             ->to($user->getEmail())
             ->subject('Email confirmation')
-            ->text('Hello, ' . $user->getUsername() . '!')
-            ->html('<p>Confirm registration on Exchange by clicking on <a href="'. $confirmPath . '">this</a> link!<br></p>');
+            ->html('<h3>Hello, ' . $user->getUsername() . '!</h3>
+<p>Confirm registration on Exchange by clicking on <a href="'. $confirmPath . '">this</a> link!<br></p>');
 
         $mailer->send($email);
     }

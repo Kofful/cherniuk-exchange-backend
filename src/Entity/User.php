@@ -18,7 +18,10 @@ use Doctrine\ORM\Mapping\UniqueConstraint;
 class User
 {
     public const DEFAULT_ROLE_ID = 1;
+    public const ADMIN_ROLE_ID = 2;
     public const DEFAULT_STATUS_ID = 1;
+    public const CONFIRMED_STATUS_ID = 2;
+    public const BANNED_STATUS_ID = 3;
     /**
      * @ORM\Id
      * @ORM\GeneratedValue
