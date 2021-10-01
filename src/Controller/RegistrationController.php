@@ -8,6 +8,8 @@ use App\Entity\UserStatus;
 use App\Service\CodeGenerator;
 use App\Service\Mailer;
 use App\Service\Mapper\UserMapper;
+use App\Service\Registration\ConfirmationService;
+use App\Service\Registration\RegistrationService;
 use App\Service\Validator\RegistrationValidator;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -22,46 +24,29 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 class RegistrationController extends AbstractController
 {
     private $passwordHasher;
+    private $validator;
+    private $mailer;
 
-    public function __construct(UserPasswordHasherInterface $passwordHasher)
+    public function __construct(UserPasswordHasherInterface $passwordHasher, ValidatorInterface $validator, MailerInterface $mailer)
     {
         $this->passwordHasher = $passwordHasher;
+        $this->validator = $validator;
+        $this->mailer = $mailer;
     }
     /**
      * @Route("/api/register", name="register")
      */
-    public function index(ValidatorInterface $validator, MailerInterface $mailer): Response
+    public function index(): Response
     {
-        $response = [];
+        $registrationService = new RegistrationService();
         $request = Request::createFromGlobals();
         $post = $request->toArray();
-
         $user = (new UserMapper())->map($post);
-        $errors = (new RegistrationValidator())->validateUser($validator, $user);
 
-        if(count($errors) > 0) {
-            $response["code"] = 400;
-            $response["messages"] = $errors;
-        } else {
-            $doctrine = $this->getDoctrine();
+        $response = $registrationService->prepare($user, $this->validator);
 
-            $user->setPassword($this->passwordHasher->hashPassword($user, $user->getPassword()));
-            $role = $doctrine->getRepository(Role::class)->find(User::DEFAULT_ROLE_ID);
-            $user->setRole($role);
-            $status = $doctrine->getRepository(UserStatus::class)->find(User::DEFAULT_STATUS_ID);
-            $user->setStatus($status);
-            $user->setConfirmationCode((new CodeGenerator())->generate());
-
-            $entityManager = $doctrine->getManager();
-            $entityManager->persist($user);
-            $entityManager->flush();
-
-            (new Mailer())->sendConfirmationEmail(
-                $mailer,
-                $_ENV["FRONTEND_DOMAIN"] . "/confirm?code={$user->getConfirmationCode()}&uid={$user->getId()}",
-                $user);
-
-            $response["code"] = 200;
+        if(!isset($response["messages"])) {
+            $response = $registrationService->register($user, $this->getDoctrine(), $this->passwordHasher, $this->mailer);
         }
 
         return $this->json($response);
@@ -72,32 +57,10 @@ class RegistrationController extends AbstractController
      */
     public function confirmRegistration(Request $request): Response
     {
-        $response = [];
-
-        $query = $request->query->all();
-        $errors = (new RegistrationValidator())->validateConfirmation($query);
-
-        if(count($errors) > 0) {
-            $response["code"] = 400;
-            $response["messages"] = $errors;
-        } else {
-            $doctrine = $this->getDoctrine();
-            $user = $doctrine->getRepository(User::class)->find($query["uid"]);
-            $errors = (new RegistrationValidator())->validateConfirmedUser($user, $query["code"]);
-            if(count($errors) > 0) {
-                $response["code"] = 400;
-                $response["messages"] = $errors;
-            } else {
-                $status = $doctrine->getRepository(UserStatus::class)->find(User::CONFIRMED_STATUS_ID);
-                $user->setStatus($status);
-                $user->setConfirmationCode("");
-
-                $entityManager = $doctrine->getManager();
-                $entityManager->persist($user);
-                $entityManager->flush();
-
-                $response["code"] = 200;
-            }
+        $confirmationService = new ConfirmationService();
+        $response = $confirmationService->prepare($request->query->all(), $this->getDoctrine());
+        if(!isset($response["messages"])) {
+            $response = $confirmationService->confirm($request->query->all(), $this->getDoctrine());
         }
         return $this->json($response);
     }

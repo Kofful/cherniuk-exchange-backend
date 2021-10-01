@@ -3,6 +3,7 @@
 namespace App\Service;
 
 use App\Entity\User;
+use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Mime\Email;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
@@ -10,6 +11,12 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 class Mailer
 {
 
+    /**
+     * @param MailerInterface $mailer
+     * @param string $confirmPath
+     * @param User $user
+     * @throws TransportExceptionInterface
+     */
     public function sendConfirmationEmail(MailerInterface $mailer, string $confirmPath, User $user)
     {
         $email = (new Email())
