@@ -23,30 +23,19 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class RegistrationController extends AbstractController
 {
-    private $passwordHasher;
-    private $validator;
-    private $mailer;
-
-    public function __construct(UserPasswordHasherInterface $passwordHasher, ValidatorInterface $validator, MailerInterface $mailer)
-    {
-        $this->passwordHasher = $passwordHasher;
-        $this->validator = $validator;
-        $this->mailer = $mailer;
-    }
     /**
      * @Route("/api/register", name="register")
      */
-    public function index(): Response
+    public function index(RegistrationService $registrationService): Response
     {
-        $registrationService = new RegistrationService();
         $request = Request::createFromGlobals();
         $post = $request->toArray();
         $user = (new UserMapper())->map($post);
 
-        $response = $registrationService->prepare($user, $this->validator);
+        $response = $registrationService->prepare($user);
 
         if(!isset($response["messages"])) {
-            $response = $registrationService->register($user, $this->getDoctrine(), $this->passwordHasher, $this->mailer);
+            $response = $registrationService->register($user, $this->getDoctrine());
         }
 
         return $this->json($response);
@@ -55,10 +44,9 @@ class RegistrationController extends AbstractController
     /**
      * @Route("/api/confirm", name="confirm")
      */
-    public function confirmRegistration(Request $request): Response
+    public function confirmRegistration(ConfirmationService $confirmationService, Request $request): Response
     {
-        $confirmationService = new ConfirmationService();
-        $response = $confirmationService->prepare($request->query->all(), $this->getDoctrine());
+        $response = $confirmationService->prepare($request->query->all());
         if(!isset($response["messages"])) {
             $response = $confirmationService->confirm($request->query->all(), $this->getDoctrine());
         }

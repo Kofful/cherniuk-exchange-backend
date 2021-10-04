@@ -9,7 +9,7 @@ use Doctrine\Persistence\ManagerRegistry;
 
 class ConfirmationService
 {
-    public function prepare(array $query, ManagerRegistry $doctrine): array
+    public function prepare(array $query): array
     {
         $response = [];
 
