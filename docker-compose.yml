@@ -18,8 +18,10 @@ services:
     container_name: php
     build:
       context: ./docker/php
+    environment:
+      PHP_IDE_CONFIG: "serverName=cherniuk-exchange"
     ports:
-      - '9000:9000'
+      - '8765:9000'
     volumes:
       - ./:/var/www/cherniuk-exchange-backend
     depends_on:
