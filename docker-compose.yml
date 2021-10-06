@@ -21,7 +21,7 @@ services:
     environment:
       PHP_IDE_CONFIG: "serverName=cherniuk-exchange"
     ports:
-      - '8765:8765'
+      - '8765:9000'
     volumes:
       - ./:/var/www/cherniuk-exchange-backend
     depends_on:

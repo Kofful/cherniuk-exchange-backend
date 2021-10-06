@@ -5,10 +5,13 @@ namespace App\Service\Registration;
 use App\Entity\Role;
 use App\Entity\User;
 use App\Entity\UserStatus;
+use App\Repository\RoleRepository;
+use App\Repository\UserStatusRepository;
 use App\Service\CodeGenerator;
 use App\Service\Mailer;
 use App\Service\Mapper\UserMapper;
 use App\Service\Validator\RegistrationValidator;
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Mailer\MailerInterface;
@@ -19,12 +22,20 @@ class RegistrationService
 {
     private $passwordHasher;
     private $validator;
+    private $roleRepository;
+    private $userStatusRepository;
+    private $entityManager;
     private $mailer;
 
-    public function __construct(ValidatorInterface  $validator, UserPasswordHasherInterface $passwordHasher, MailerInterface $mailer)
+    public function __construct(ValidatorInterface  $validator, UserPasswordHasherInterface $passwordHasher,
+                                RoleRepository $roleRepository, UserStatusRepository $userStatusRepository,
+                                EntityManagerInterface $entityManager, MailerInterface $mailer)
     {
         $this->passwordHasher = $passwordHasher;
         $this->validator = $validator;
+        $this->roleRepository = $roleRepository;
+        $this->userStatusRepository = $userStatusRepository;
+        $this->entityManager = $entityManager;
         $this->mailer = $mailer;
     }
 
@@ -41,20 +52,19 @@ class RegistrationService
         return $response;
     }
 
-    public function register(User $user, ManagerRegistry $doctrine): array
+    public function register(User $user): array
     {
         $response = [];
 
         $user->setPassword($this->passwordHasher->hashPassword($user, $user->getPassword()));
-        $role = $doctrine->getRepository(Role::class)->find(User::DEFAULT_ROLE_ID);
+        $role = $this->roleRepository->find(User::DEFAULT_ROLE_ID);
         $user->setRole($role);
-        $status = $doctrine->getRepository(UserStatus::class)->find(User::DEFAULT_STATUS_ID);
+        $status = $this->userStatusRepository->find(User::DEFAULT_STATUS_ID);
         $user->setStatus($status);
         $user->setConfirmationCode((new CodeGenerator())->generate());
 
-        $entityManager = $doctrine->getManager();
-        $entityManager->persist($user);
-        $entityManager->flush();
+        $this->entityManager->persist($user);
+        $this->entityManager->flush();
 
         try {
             (new Mailer())->sendConfirmationEmail(

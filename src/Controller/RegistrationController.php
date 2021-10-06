@@ -35,7 +35,7 @@ class RegistrationController extends AbstractController
         $response = $registrationService->prepare($user);
 
         if(!isset($response["messages"])) {
-            $response = $registrationService->register($user, $this->getDoctrine());
+            $response = $registrationService->register($user);
         }
 
         return $this->json($response);
@@ -48,7 +48,7 @@ class RegistrationController extends AbstractController
     {
         $response = $confirmationService->prepare($request->query->all());
         if(!isset($response["messages"])) {
-            $response = $confirmationService->confirm($request->query->all(), $this->getDoctrine());
+            $response = $confirmationService->confirm($request->query->all());
         }
         return $this->json($response);
     }
