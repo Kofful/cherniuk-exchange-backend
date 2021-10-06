@@ -10,14 +10,19 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 class Mailer
 {
+    private $mailer;
+
+    public function __construct(MailerInterface $mailer)
+    {
+        $this->mailer = $mailer;
+    }
 
     /**
-     * @param MailerInterface $mailer
      * @param string $confirmPath
      * @param User $user
      * @throws TransportExceptionInterface
      */
-    public function sendConfirmationEmail(MailerInterface $mailer, string $confirmPath, User $user)
+    public function sendConfirmationEmail(string $confirmPath, User $user)
     {
         $email = (new Email())
             ->from($_ENV["MAILER_FROM"])
@@ -26,6 +31,6 @@ class Mailer
             ->html('<h3>Hello, ' . $user->getUsername() . '!</h3>
 <p>Confirm registration on Exchange by clicking on <a href="'. $confirmPath . '">this</a> link!<br></p>');
 
-        $mailer->send($email);
+        $this->mailer->send($email);
     }
 }

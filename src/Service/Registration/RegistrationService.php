@@ -29,7 +29,7 @@ class RegistrationService
 
     public function __construct(ValidatorInterface  $validator, UserPasswordHasherInterface $passwordHasher,
                                 RoleRepository $roleRepository, UserStatusRepository $userStatusRepository,
-                                EntityManagerInterface $entityManager, MailerInterface $mailer)
+                                EntityManagerInterface $entityManager, Mailer $mailer)
     {
         $this->passwordHasher = $passwordHasher;
         $this->validator = $validator;
@@ -67,8 +67,7 @@ class RegistrationService
         $this->entityManager->flush();
 
         try {
-            (new Mailer())->sendConfirmationEmail(
-                $this->mailer,
+            $this->mailer->sendConfirmationEmail(
                 $_ENV["FRONTEND_DOMAIN"] . "/confirm?code={$user->getConfirmationCode()}&uid={$user->getId()}",
                 $user);
             $response["code"] = 200;
