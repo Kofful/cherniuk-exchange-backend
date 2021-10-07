@@ -37,9 +37,14 @@ security:
             pattern: ^/api/admin_check
             stateless: true
 
+        stickers:
+            pattern: ^/api/srickers
+            stateless: true
+
     access_control:
         - { path: ^/api/login, roles: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/api/register, roles: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/api/confirm, roles: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/api/admin_check, roles: [ROLE_USER, ROLE_ADMIN] }
+        - { path: ^/api/stickers, roles: IS_AUTHENTICATED_ANONYMOUSLY}
         - { path: ^/api, roles: IS_AUTHENTICATED_FULLY }

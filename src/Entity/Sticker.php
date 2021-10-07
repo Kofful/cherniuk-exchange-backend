@@ -34,6 +34,11 @@ class Sticker
     private $chance;
 
     /**
+     * @ORM\Column(type="string", length=64)
+     */
+    private $path;
+
+    /**
      * @ORM\Column(type="datetime_immutable", options={"default" : "CURRENT_TIMESTAMP"})
      */
     private $created_at;
@@ -82,6 +87,22 @@ class Sticker
         $this->chance = $chance;
 
         return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getPath()
+    {
+        return $this->path;
+    }
+
+    /**
+     * @param mixed $path
+     */
+    public function setPath($path): void
+    {
+        $this->path = $path;
     }
 
     public function getCreatedAt(): ?\DateTimeImmutable

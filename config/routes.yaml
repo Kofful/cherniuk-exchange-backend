@@ -18,3 +18,8 @@ admin_check:
   path: /api/admin_check
   controller: App\Controller\AdminController::index
   methods: GET
+
+stickers:
+  path: /api/stickers
+  controller: App\Controller\StickerController::getAll
+  methods: GET
