@@ -24,6 +24,8 @@ class User implements PasswordAuthenticatedUserInterface, UserInterface
     public const DEFAULT_STATUS_ID = 1;
     public const CONFIRMED_STATUS_ID = 2;
     public const BANNED_STATUS_ID = 3;
+    public const DEFAULT_ROLE_NAME = "ROLE_USER";
+    public const ADMIN_ROLE_NAME = "ROLE_ADMIN";
     /**
      * @ORM\Id
      * @ORM\GeneratedValue
@@ -270,9 +272,10 @@ class User implements PasswordAuthenticatedUserInterface, UserInterface
         $this->setUpdatedAt(new \DateTimeImmutable('now'));
     }
 
-    public function getRoles()
+    public function getRoles(): array
     {
-        return [];
+        $role = $this->getRole();
+        return [$role->getName()];
     }
 
     public function getSalt()

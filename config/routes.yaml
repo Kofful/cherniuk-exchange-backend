@@ -14,3 +14,7 @@ confirm:
   controller: App\Controller\RegistrationController::confirmRegistration
   methods: GET
 
+admin_check:
+  path: /api/admin_check
+  controller: App\Controller\AdminController::index
+  methods: GET
