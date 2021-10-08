@@ -29,4 +29,28 @@ class StickerController extends AbstractController
             "count" => $count
         ]);
     }
+
+    /**
+     * @Route("/api/sticker", name="add_sticker")
+     */
+    public function add(): Response
+    {
+        //TODO sticker adding logic
+        return $this->json([
+           "message" => "this message will be removed",
+           "controller" => "StickerController::add"
+        ]);
+    }
+
+    /**
+     * @Route("/api/sticker", name="update_sticker")
+     */
+    public function update(): Response
+    {
+        //TODO sticker updating logic
+        return $this->json([
+            "message" => "this message will be removed",
+            "controller" => "StickerController::update"
+        ]);
+    }
 }

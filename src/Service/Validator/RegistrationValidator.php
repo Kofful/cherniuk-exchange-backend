@@ -9,10 +9,17 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class RegistrationValidator
 {
-    public function validateUser(ValidatorInterface $validator, User $user): array
+    private ValidatorInterface $validator;
+
+    public function __construct(ValidatorInterface $validator)
+    {
+        $this->validator = $validator;
+    }
+
+    public function validateUser(User $user): array
     {
         $result = [];
-        $errors = $validator->validate($user);
+        $errors = $this->validator->validate($user);
 
         if (count($errors) > 0) {
             foreach($errors as $error) {

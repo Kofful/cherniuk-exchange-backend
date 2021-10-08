@@ -25,20 +25,7 @@ security:
             stateless: true
             jwt: ~
 
-        register:
-            pattern: ^/api/register
-            stateless: true
-
-        confirm:
-            pattern: ^/api/confirm
-            stateless: true
-
-        admin_check:
-            pattern: ^/api/admin_check
-            stateless: true
-
-        stickers:
-            pattern: ^/api/srickers
+        main:
             stateless: true
 
     access_control:
@@ -47,4 +34,5 @@ security:
         - { path: ^/api/confirm, roles: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/api/admin_check, roles: [ROLE_USER, ROLE_ADMIN] }
         - { path: ^/api/stickers, roles: IS_AUTHENTICATED_ANONYMOUSLY}
+        - { path: ^/api/sticker, roles: ROLE_ADMIN, methods: [POST, PUT]}
         - { path: ^/api, roles: IS_AUTHENTICATED_FULLY }

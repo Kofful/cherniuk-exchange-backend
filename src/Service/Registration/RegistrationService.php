@@ -20,19 +20,19 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class RegistrationService
 {
-    private $passwordHasher;
-    private $validator;
-    private $roleRepository;
-    private $userStatusRepository;
-    private $entityManager;
-    private $mailer;
+    private UserPasswordHasherInterface $passwordHasher;
+    private RegistrationValidator $registrationValidator;
+    private RoleRepository $roleRepository;
+    private UserStatusRepository $userStatusRepository;
+    private EntityManagerInterface $entityManager;
+    private Mailer $mailer;
 
-    public function __construct(ValidatorInterface  $validator, UserPasswordHasherInterface $passwordHasher,
+    public function __construct(RegistrationValidator $registrationValidator, UserPasswordHasherInterface $passwordHasher,
                                 RoleRepository $roleRepository, UserStatusRepository $userStatusRepository,
                                 EntityManagerInterface $entityManager, Mailer $mailer)
     {
         $this->passwordHasher = $passwordHasher;
-        $this->validator = $validator;
+        $this->registrationValidator = $registrationValidator;
         $this->roleRepository = $roleRepository;
         $this->userStatusRepository = $userStatusRepository;
         $this->entityManager = $entityManager;
@@ -42,7 +42,7 @@ class RegistrationService
     public function prepare(User $user): array
     {
         $response = [];
-        $errors = (new RegistrationValidator())->validateUser($this->validator, $user);
+        $errors = $this->registrationValidator->validateUser($user);
 
         if(count($errors) > 0) {
             $response["code"] = 400;

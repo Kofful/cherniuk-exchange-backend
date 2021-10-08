@@ -23,3 +23,13 @@ stickers:
   path: /api/stickers
   controller: App\Controller\StickerController::getAll
   methods: GET
+
+add_sticker:
+  path: /api/sticker
+  controller: App\Controller\StickerController::add
+  methods: POST
+
+update_sticker:
+  path: /api/sticker
+  controller: App\Controller\StickerController::update
+  methods: PUT
