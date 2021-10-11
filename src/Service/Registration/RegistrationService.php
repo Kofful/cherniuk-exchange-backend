@@ -9,47 +9,43 @@ use App\Repository\RoleRepository;
 use App\Repository\UserStatusRepository;
 use App\Service\CodeGenerator;
 use App\Service\Mailer;
-use App\Service\Mapper\UserMapper;
 use App\Service\Validator\RegistrationValidator;
+use Doctrine\Common\Annotations\AnnotationReader;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
+use Symfony\Component\Serializer\Mapping\Factory\ClassMetadataFactory;
+use Symfony\Component\Serializer\Mapping\Loader\AnnotationLoader;
+use Symfony\Component\Serializer\Normalizer\ArrayDenormalizer;
+use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
+use Symfony\Component\Serializer\Serializer;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class RegistrationService
 {
     private UserPasswordHasherInterface $passwordHasher;
-    private RegistrationValidator $registrationValidator;
     private RoleRepository $roleRepository;
     private UserStatusRepository $userStatusRepository;
     private EntityManagerInterface $entityManager;
     private Mailer $mailer;
 
-    public function __construct(RegistrationValidator $registrationValidator, UserPasswordHasherInterface $passwordHasher,
+    public function __construct(UserPasswordHasherInterface $passwordHasher,
                                 RoleRepository $roleRepository, UserStatusRepository $userStatusRepository,
                                 EntityManagerInterface $entityManager, Mailer $mailer)
     {
         $this->passwordHasher = $passwordHasher;
-        $this->registrationValidator = $registrationValidator;
         $this->roleRepository = $roleRepository;
         $this->userStatusRepository = $userStatusRepository;
         $this->entityManager = $entityManager;
         $this->mailer = $mailer;
     }
 
-    public function prepare(User $user): array
+    public function prepareUser(array $query): User
     {
-        $response = [];
-        $errors = $this->registrationValidator->validateUser($user);
-
-        if(count($errors) > 0) {
-            $response["code"] = 400;
-            $response["messages"] = $errors;
-        }
-
-        return $response;
+        return (new Serializer([new ObjectNormalizer()]))
+            ->denormalize($query,"App\Entity\User");
     }
 
     public function register(User $user): array
@@ -70,9 +66,7 @@ class RegistrationService
             $this->mailer->sendConfirmationEmail(
                 $_ENV["FRONTEND_DOMAIN"] . "/confirm?code={$user->getConfirmationCode()}&uid={$user->getId()}",
                 $user);
-            $response["code"] = 200;
         } catch(\Throwable $t) {
-            $response["code"] = 500;
             $response["message"] = "Failed to send confirmation to email.";
         }
         return $response;
