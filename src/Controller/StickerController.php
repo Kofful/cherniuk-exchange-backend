@@ -2,8 +2,10 @@
 
 namespace App\Controller;
 
+use App\Service\Upload\UploadService;
 use App\Service\Sticker\StickerService;
 use App\Service\User\UserService;
+use App\Service\Validator\StickerValidator;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -33,13 +35,26 @@ class StickerController extends AbstractController
     /**
      * @Route("/api/sticker", name="add_sticker")
      */
-    public function add(): Response
+    public function add(UploadService $uploadService, StickerService $stickerService, StickerValidator $stickerValidator, Request $request): Response
     {
-        //TODO sticker adding logic
-        return $this->json([
-           "message" => "this message will be removed",
-           "controller" => "StickerController::add"
-        ]);
+        $response = [];
+
+        $file = $request->files->get("sticker");
+        $fileName = $uploadService->saveImageToDirectory($file);
+        $status = $fileName ? 200 : 400;
+
+        if ($status == 200) {
+            $sticker = $stickerService->prepareSticker(
+                array_merge($request->request->all(), ["path" => $fileName])
+            );
+            $errors = $stickerValidator->validateSticker($sticker);
+
+            $status = count($errors) ? 400 : 200;
+
+            $response = $status == 200 ? $stickerService->add($sticker) : $errors;
+        }
+
+        return $this->json($response, $status);
     }
 
     /**
