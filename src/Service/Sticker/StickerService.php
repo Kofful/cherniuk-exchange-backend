@@ -45,6 +45,7 @@ class StickerService
 
     public function prepareSticker(array $query): Sticker
     {
+        $query = array_intersect_key($query, array_flip(["name", "coefficient"]));
         return (new Serializer([new ObjectNormalizer()]))
             ->denormalize($query,"App\Entity\Sticker");
     }

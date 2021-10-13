@@ -44,6 +44,7 @@ class RegistrationService
 
     public function prepareUser(array $query): User
     {
+        $query = array_intersect_key($query, array_flip(["username", "email", "password"]));
         return (new Serializer([new ObjectNormalizer()]))
             ->denormalize($query,"App\Entity\User");
     }
