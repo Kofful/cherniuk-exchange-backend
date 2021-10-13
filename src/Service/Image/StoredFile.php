@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Service\Upload;
+namespace App\Service\Image;
 
 class StoredFile
 {

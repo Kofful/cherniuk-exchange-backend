@@ -30,6 +30,6 @@ add_sticker:
   methods: POST
 
 update_sticker:
-  path: /api/sticker
+  path: /api/sticker-update
   controller: App\Controller\StickerController::update
-  methods: PUT
+  methods: POST

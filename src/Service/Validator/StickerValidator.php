@@ -14,15 +14,17 @@ class StickerValidator
         $this->validator = $validator;
     }
 
-    public function validateSticker(Sticker $sticker): array
+    public function validateSticker(Sticker $sticker, array $properties = ["name", "coefficient"]): array
     {
         $result = [];
-        $errors = $this->validator->validateProperty($sticker, "name");
-        $errors->addAll($this->validator->validateProperty($sticker, "coefficient"));
 
-        if (count($errors) > 0) {
-            foreach($errors as $error) {
-                array_push($result, $error->getMessage());
+        foreach($properties as $property) {
+            $errors = $this->validator->validateProperty($sticker, $property);
+
+            if (count($errors) > 0) {
+                foreach ($errors as $error) {
+                    array_push($result, $error->getMessage());
+                }
             }
         }
 

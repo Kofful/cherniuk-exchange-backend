@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Service\Upload;
+namespace App\Service\Image;
 
 use App\Service\Validator\StickerValidator;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpKernel\KernelInterface;
 
-class UploadService
+class ImageService
 {
     public const PNG_EXTENSION = "png";
 
@@ -31,7 +31,16 @@ class UploadService
         return $storedFile->getName() . "." . $storedFile->getExtension();
     }
 
-    public function cropFile(StoredFile $file, int $size, string $suffix = "")
+    public function removeImage(string $fileName): void
+    {
+        unlink($this->targetDir . $fileName);
+        $dotPosition = strpos($fileName, ".");
+        $extension = substr($fileName, $dotPosition);
+        $name = substr($fileName, 0, $dotPosition);
+        unlink($this->targetDir . $name . "_100" . $extension);
+    }
+
+    public function cropFile(StoredFile $file, int $size, string $suffix = ""): void
     {
         $original = imagecreatefrompng($this->targetDir . $file->getName() . "." . $file->getExtension());
         $originalSize = getimagesize($this->targetDir . $file->getName() . "." . $file->getExtension());

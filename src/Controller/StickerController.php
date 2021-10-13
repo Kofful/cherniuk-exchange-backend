@@ -2,7 +2,7 @@
 
 namespace App\Controller;
 
-use App\Service\Upload\UploadService;
+use App\Service\Image\ImageService;
 use App\Service\Sticker\StickerService;
 use App\Service\User\UserService;
 use App\Service\Validator\StickerValidator;
@@ -35,17 +35,18 @@ class StickerController extends AbstractController
     /**
      * @Route("/api/sticker", name="add_sticker")
      */
-    public function add(UploadService $uploadService, StickerService $stickerService, StickerValidator $stickerValidator, Request $request): Response
+    public function add(ImageService $imageService, StickerService $stickerService, StickerValidator $stickerValidator, Request $request): Response
     {
         $response = [];
 
         $file = $request->files->get("sticker");
-        $fileName = $uploadService->saveImageToDirectory($file);
+        $fileName = $imageService->saveImageToDirectory($file);
         $status = $fileName ? 200 : 400;
 
         if ($status == 200) {
             $sticker = $stickerService->prepareSticker(
-                array_merge($request->request->all(), ["path" => $fileName])
+                array_merge($request->request->all(), ["path" => $fileName]),
+                ["name", "coefficient", "path"]
             );
             $errors = $stickerValidator->validateSticker($sticker);
 
@@ -60,12 +61,29 @@ class StickerController extends AbstractController
     /**
      * @Route("/api/sticker", name="update_sticker")
      */
-    public function update(): Response
+    public function update(ImageService $imageService, StickerService $stickerService, StickerValidator $stickerValidator, Request $request): Response
     {
-        //TODO sticker updating logic
-        return $this->json([
-            "message" => "this message will be removed",
-            "controller" => "StickerController::update"
-        ]);
+        $file = $request->files->get("sticker");
+        $fileName = $imageService->saveImageToDirectory($file);
+
+        $params = isset($fileName) ? array_merge($request->request->all(), ["path" => $fileName]) : $request->request->all();
+
+        $sticker = $stickerService->prepareSticker(
+            $params,
+            ["name", "coefficient", "id", "path"]
+        );
+
+        $errors = $stickerValidator->validateSticker(
+            $sticker,
+            array_keys(array_intersect_key(
+                $params,
+                array_flip(["name", "coefficient", "id", "path"]))
+            ));
+
+        $status = count($errors) ? 400 : 200;
+
+        $response = $status == 200 ? $stickerService->update($sticker) : $errors;
+
+        return $this->json($response, $status);
     }
 }
