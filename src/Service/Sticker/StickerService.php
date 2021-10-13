@@ -78,9 +78,13 @@ class StickerService
             return ["Sticker with this id doesn't exist"];
         }
 
-        if ($sticker->getCoefficient()) {
+        if ($sticker->getCoefficient() !== null) {
+            if ($sticker->getCoefficient() == 0) {
+                $stickerEntity->setChance(0);
+            } else {
+                $stickerEntity->setChance(Sticker::MAX_CHANCE / $sticker->getCoefficient());
+            }
             $stickerEntity->setCoefficient($sticker->getCoefficient());
-            $stickerEntity->setChance(Sticker::MAX_CHANCE / $sticker->getCoefficient());
         }
 
         if ($sticker->getPath()) {
