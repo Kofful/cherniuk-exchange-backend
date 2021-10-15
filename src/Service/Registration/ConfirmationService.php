@@ -27,7 +27,7 @@ class ConfirmationService
 
     public function confirm(array $query): array
     {
-        $response = [];
+        $result = [];
         $user = $this->userRepository->find($query["uid"]);
 
         if(!isset($user)) {
@@ -37,7 +37,7 @@ class ConfirmationService
         $errors = $this->registrationValidator->validateConfirmedUser($user, $query["code"]);
 
         if(count($errors) > 0) {
-            $response = $errors;
+            $result = $errors;
         } else {
             $status = $this->userStatusRepository->find(User::CONFIRMED_STATUS_ID);
             $user->setStatus($status);
@@ -47,6 +47,6 @@ class ConfirmationService
             $this->entityManager->flush();
         }
 
-        return $response;
+        return $result;
     }
 }

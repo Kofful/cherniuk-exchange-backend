@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\User;
 use App\Service\Image\ImageService;
 use App\Service\Sticker\StickerService;
 use App\Service\User\UserService;
@@ -22,7 +23,7 @@ class StickerController extends AbstractController
         $limit = $request->query->get("limit") ?? 10;
         $user = $this->getUser();
 
-        $withCoefficients = isset($user) && (new UserService())->isAdmin($user);
+        $withCoefficients = isset($user) && in_array(User::ADMIN_ROLE_NAME, $this->getUser()->getRoles());
         $stickers = $stickerService->getAll($withCoefficients, $page, $limit);
         $count = $stickerService->getCount();
 
@@ -37,7 +38,7 @@ class StickerController extends AbstractController
      */
     public function add(ImageService $imageService, StickerService $stickerService, StickerValidator $stickerValidator, Request $request): Response
     {
-        $response = [];
+        $body = [];
         $status = 200;
 
         $file = $request->files->get("sticker");
@@ -52,16 +53,16 @@ class StickerController extends AbstractController
 
             if (count($errors) > 0) {
                 $status = 400;
-                $response = $errors;
+                $body = $errors;
             } else {
                 $stickerService->add($sticker);
             }
         } else {
             $status = 400;
-            $response = ["The file cannot be saved"];
+            $body = ["The file cannot be saved"];
         }
 
-        return $this->json($response, $status);
+        return $this->json($body, $status);
     }
 
     /**
@@ -69,7 +70,7 @@ class StickerController extends AbstractController
      */
     public function update(ImageService $imageService, StickerService $stickerService, StickerValidator $stickerValidator, Request $request): Response
     {
-        $response = [];
+        $body = [];
         $status = 200;
         $file = $request->files->get("sticker");
         $fileName = $imageService->saveImageToDirectory($file);
@@ -90,11 +91,11 @@ class StickerController extends AbstractController
 
         if (count($errors) > 0) {
             $status = 400;
-            $response = $errors;
+            $body = $errors;
         } else {
             $stickerService->add($sticker);
         }
 
-        return $this->json($response, $status);
+        return $this->json($body, $status);
     }
 }

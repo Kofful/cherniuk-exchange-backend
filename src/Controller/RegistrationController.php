@@ -29,19 +29,19 @@ class RegistrationController extends AbstractController
                           RegistrationValidator $registrationValidator, Request $request): Response
     {
         $status = 200;
-        $response = [];
+        $body = [];
 
         $user = $registrationService->prepareUser($request->toArray());
         $errors = $registrationValidator->validateUser($user);
 
         if (count($errors) > 0) {
             $status = 400;
-            $response = $errors;
+            $body = $errors;
         } else {
-            $response = $registrationService->register($user);
+            $body = $registrationService->register($user);
         }
 
-        return $this->json($response, $status);
+        return $this->json($body, $status);
     }
 
     /**
@@ -51,20 +51,20 @@ class RegistrationController extends AbstractController
                                         RegistrationValidator $registrationValidator, Request $request): Response
     {
         $status = 200;
-        $response = [];
+        $body = [];
 
         $errors = $registrationValidator->validateConfirmation($request->query->all());
 
         if(count($errors) > 0) {
             $status = 400;
-            $response = $errors;
+            $body = $errors;
         } else {
-            $response = $confirmationService->confirm($request->query->all());
-            if(count($response) > 0) {
+            $body = $confirmationService->confirm($request->query->all());
+            if(count($body) > 0) {
                 $status = 400;
             }
         }
 
-        return $this->json($response, $status);
+        return $this->json($body, $status);
     }
 }

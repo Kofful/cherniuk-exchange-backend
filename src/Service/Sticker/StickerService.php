@@ -56,14 +56,14 @@ class StickerService
 
     public function add(Sticker $sticker): array
     {
-        $response = [];
+        $result = [];
 
         $sticker->setChance(Sticker::MAX_CHANCE / $sticker->getCoefficient());
 
         $this->entityManager->persist($sticker);
         $this->entityManager->flush();
 
-        return $response;
+        return $result;
     }
 
     public function update(Sticker $sticker): array

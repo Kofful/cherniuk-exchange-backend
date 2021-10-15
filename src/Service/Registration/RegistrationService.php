@@ -51,7 +51,7 @@ class RegistrationService
 
     public function register(User $user): array
     {
-        $response = [];
+        $result = [];
 
         $user->setPassword($this->passwordHasher->hashPassword($user, $user->getPassword()));
         $role = $this->roleRepository->find(User::DEFAULT_ROLE_ID);
@@ -68,8 +68,8 @@ class RegistrationService
                 $_ENV["FRONTEND_DOMAIN"] . "/confirm?code={$user->getConfirmationCode()}&uid={$user->getId()}",
                 $user);
         } catch(\Throwable $t) {
-            $response["message"] = "Failed to send confirmation to email.";
+            $result["message"] = "Failed to send confirmation to email.";
         }
-        return $response;
+        return $result;
     }
 }
