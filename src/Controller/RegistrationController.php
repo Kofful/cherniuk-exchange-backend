@@ -28,12 +28,18 @@ class RegistrationController extends AbstractController
     public function index(RegistrationService $registrationService,
                           RegistrationValidator $registrationValidator, Request $request): Response
     {
+        $status = 200;
+        $response = [];
+
         $user = $registrationService->prepareUser($request->toArray());
         $errors = $registrationValidator->validateUser($user);
 
-        $status = count($errors) > 0 ? 400 : 200;
-
-        $response = $status == 200 ? $registrationService->register($user) : $errors;
+        if (count($errors) > 0) {
+            $status = 400;
+            $response = $errors;
+        } else {
+            $response = $registrationService->register($user);
+        }
 
         return $this->json($response, $status);
     }

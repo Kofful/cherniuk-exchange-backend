@@ -38,21 +38,27 @@ class StickerController extends AbstractController
     public function add(ImageService $imageService, StickerService $stickerService, StickerValidator $stickerValidator, Request $request): Response
     {
         $response = [];
+        $status = 200;
 
         $file = $request->files->get("sticker");
         $fileName = $imageService->saveImageToDirectory($file);
-        $status = $fileName ? 200 : 400;
 
-        if ($status == 200) {
+        if ($fileName) {
             $sticker = $stickerService->prepareSticker(
                 array_merge($request->request->all(), ["path" => $fileName]),
                 ["name", "coefficient", "path"]
             );
             $errors = $stickerValidator->validateSticker($sticker);
 
-            $status = count($errors) ? 400 : 200;
-
-            $response = $status == 200 ? $stickerService->add($sticker) : $errors;
+            if (count($errors) > 0) {
+                $status = 400;
+                $response = $errors;
+            } else {
+                $stickerService->add($sticker);
+            }
+        } else {
+            $status = 400;
+            $response = ["The file cannot be saved"];
         }
 
         return $this->json($response, $status);
@@ -63,6 +69,8 @@ class StickerController extends AbstractController
      */
     public function update(ImageService $imageService, StickerService $stickerService, StickerValidator $stickerValidator, Request $request): Response
     {
+        $response = [];
+        $status = 200;
         $file = $request->files->get("sticker");
         $fileName = $imageService->saveImageToDirectory($file);
 
@@ -80,9 +88,12 @@ class StickerController extends AbstractController
                 array_flip(["name", "coefficient", "id", "path"]))
             ));
 
-        $status = count($errors) ? 400 : 200;
-
-        $response = $status == 200 ? $stickerService->update($sticker) : $errors;
+        if (count($errors) > 0) {
+            $status = 400;
+            $response = $errors;
+        } else {
+            $stickerService->add($sticker);
+        }
 
         return $this->json($response, $status);
     }
