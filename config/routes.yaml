@@ -15,8 +15,8 @@ confirm:
   methods: GET
 
 admin_check:
-  path: /api/admin_check
-  controller: App\Controller\AdminController::index
+  path: /api/self
+  controller: App\Controller\UserController::index
   methods: GET
 
 stickers:

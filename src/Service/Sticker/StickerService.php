@@ -5,7 +5,7 @@ namespace App\Service\Sticker;
 
 use App\Entity\Sticker;
 use App\Repository\StickerRepository;
-use App\Service\Normalizer\StickerNormalizer;
+use App\Service\Normalizer\Normalizer;
 use App\Service\Image\ImageService;
 use App\Service\Validator\RegistrationValidator;
 use App\Service\Validator\StickerValidator;
@@ -30,7 +30,7 @@ class StickerService
     {
         $result = [];
 
-        $normalizer = new StickerNormalizer();
+        $normalizer = new Normalizer();
 
         $stickers = $this->stickerRepository->findPage($page, $limit);
 

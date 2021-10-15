@@ -2,21 +2,22 @@
 
 namespace App\Controller;
 
+use App\Entity\User;
 use App\Service\User\UserService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
-class AdminController extends AbstractController
+class UserController extends AbstractController
 {
     /**
-     * @Route("/api/admin_check", name="admin_check")
+     * @Route("/api/self", name="self")
      */
-    public function index(): Response
+    public function index(UserService $userService): Response
     {
-        $isAdmin = (new UserService())->isAdmin($this->getUser());
+        $user = $userService->getUser($this->getUser());
         return $this->json([
-            "isAdmin" => $isAdmin
+            "user" => $user
         ]);
     }
 }

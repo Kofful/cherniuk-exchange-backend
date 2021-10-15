@@ -3,17 +3,22 @@
 namespace App\Service\User;
 
 use App\Entity\User;
+use App\Service\Normalizer\Normalizer;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
+use Symfony\Component\Serializer\Serializer;
 
 class UserService
 {
-    public function isAdmin(UserInterface $user): bool
+    public function getUser(User $user)
     {
-        $roles = $user->getRoles();
-        $isAccepted = false;
-        if(in_array(User::ADMIN_ROLE_NAME, $roles)) {
-            $isAccepted = true;
-        }
-        return $isAccepted;
+        $userArray = (new Serializer([new ObjectNormalizer()]))->normalize($user);
+
+        $userNormalizer = new Normalizer();
+        $hiddenColumns = ["password", "createdAt", "updatedAt", "role", "status", "salt", "confirmationCode"];
+
+        $result = $userNormalizer->normalize($userArray, $hiddenColumns);
+
+        return $result;
     }
 }
