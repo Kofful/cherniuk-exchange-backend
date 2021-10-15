@@ -37,7 +37,7 @@ final class Version20210928134954 extends AbstractMigration
         $this->addSql('ALTER TABLE users ADD CONSTRAINT FK_1483A5E9D60322AC FOREIGN KEY (role_id) REFERENCES roles (id)');
         $this->addSql('ALTER TABLE users ADD CONSTRAINT FK_1483A5E96BF700BD FOREIGN KEY (status_id) REFERENCES user_statuses (id)');
 
-        $this->addSql('INSERT INTO roles (name) VALUES ("user"), ("admin")');
+        $this->addSql('INSERT INTO roles (name) VALUES ("ROLE_USER"), ("ROLE_ADMIN")');
         $this->addSql('INSERT INTO offer_statuses (name) VALUES ("open"), ("pending"), ("closed")');
         $this->addSql('INSERT INTO user_statuses (name) VALUES ("unconfirmed"), ("confirmed"), ("banned")');
     }

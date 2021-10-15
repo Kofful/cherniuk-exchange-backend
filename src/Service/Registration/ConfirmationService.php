@@ -12,39 +12,32 @@ use Doctrine\Persistence\ManagerRegistry;
 
 class ConfirmationService
 {
-    private $userRepository;
-    private $userStatusRepository;
-    private $entityManager;
+    private UserRepository $userRepository;
+    private UserStatusRepository $userStatusRepository;
+    private EntityManagerInterface $entityManager;
+    private RegistrationValidator $registrationValidator;
 
-    public function __construct(UserRepository $userRepository, UserStatusRepository $userStatusRepository, EntityManagerInterface $entityManager) {
+    public function __construct(UserRepository $userRepository, UserStatusRepository $userStatusRepository,
+                                EntityManagerInterface $entityManager, RegistrationValidator $registrationValidator) {
         $this->userRepository = $userRepository;
         $this->userStatusRepository = $userStatusRepository;
         $this->entityManager = $entityManager;
-    }
-
-    public function prepare(array $query): array
-    {
-        $response = [];
-
-        $errors = (new RegistrationValidator())->validateConfirmation($query);
-
-        if(count($errors) > 0) {
-            $response["code"] = 400;
-            $response["messages"] = $errors;
-        }
-
-        return $response;
+        $this->registrationValidator = $registrationValidator;
     }
 
     public function confirm(array $query): array
     {
-        $response = [];
+        $result = [];
         $user = $this->userRepository->find($query["uid"]);
-        $errors = (new RegistrationValidator())->validateConfirmedUser($user, $query["code"]);
+
+        if(!isset($user)) {
+            return ["User not found."];
+        }
+
+        $errors = $this->registrationValidator->validateConfirmedUser($user, $query["code"]);
 
         if(count($errors) > 0) {
-            $response["code"] = 400;
-            $response["messages"] = $errors;
+            $result = $errors;
         } else {
             $status = $this->userStatusRepository->find(User::CONFIRMED_STATUS_ID);
             $user->setStatus($status);
@@ -52,9 +45,8 @@ class ConfirmationService
 
             $this->entityManager->persist($user);
             $this->entityManager->flush();
-            $response["code"] = 200;
         }
 
-        return $response;
+        return $result;
     }
 }

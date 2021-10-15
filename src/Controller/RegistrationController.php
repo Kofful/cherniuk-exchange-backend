@@ -7,7 +7,6 @@ use App\Entity\User;
 use App\Entity\UserStatus;
 use App\Service\CodeGenerator;
 use App\Service\Mailer;
-use App\Service\Mapper\UserMapper;
 use App\Service\Registration\ConfirmationService;
 use App\Service\Registration\RegistrationService;
 use App\Service\Validator\RegistrationValidator;
@@ -26,30 +25,46 @@ class RegistrationController extends AbstractController
     /**
      * @Route("/api/register", name="register")
      */
-    public function index(RegistrationService $registrationService): Response
+    public function index(RegistrationService $registrationService,
+                          RegistrationValidator $registrationValidator, Request $request): Response
     {
-        $request = Request::createFromGlobals();
-        $post = $request->toArray();
-        $user = (new UserMapper())->map($post);
+        $status = 200;
+        $body = [];
 
-        $response = $registrationService->prepare($user);
+        $user = $registrationService->prepareUser($request->toArray());
+        $errors = $registrationValidator->validateUser($user);
 
-        if(!isset($response["messages"])) {
-            $response = $registrationService->register($user);
+        if (count($errors) > 0) {
+            $status = 400;
+            $body = $errors;
+        } else {
+            $body = $registrationService->register($user);
         }
 
-        return $this->json($response);
+        return $this->json($body, $status);
     }
 
     /**
      * @Route("/api/confirm", name="confirm")
      */
-    public function confirmRegistration(ConfirmationService $confirmationService, Request $request): Response
+    public function confirmRegistration(ConfirmationService $confirmationService,
+                                        RegistrationValidator $registrationValidator, Request $request): Response
     {
-        $response = $confirmationService->prepare($request->query->all());
-        if(!isset($response["messages"])) {
-            $response = $confirmationService->confirm($request->query->all());
+        $status = 200;
+        $body = [];
+
+        $errors = $registrationValidator->validateConfirmation($request->query->all());
+
+        if(count($errors) > 0) {
+            $status = 400;
+            $body = $errors;
+        } else {
+            $body = $confirmationService->confirm($request->query->all());
+            if(count($body) > 0) {
+                $status = 400;
+            }
         }
-        return $this->json($response);
+
+        return $this->json($body, $status);
     }
 }

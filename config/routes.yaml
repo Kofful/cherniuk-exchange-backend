@@ -14,3 +14,22 @@ confirm:
   controller: App\Controller\RegistrationController::confirmRegistration
   methods: GET
 
+admin_check:
+  path: /api/self
+  controller: App\Controller\UserController::index
+  methods: GET
+
+stickers:
+  path: /api/stickers
+  controller: App\Controller\StickerController::getAll
+  methods: GET
+
+add_sticker:
+  path: /api/sticker
+  controller: App\Controller\StickerController::add
+  methods: POST
+
+update_sticker:
+  path: /api/sticker-update
+  controller: App\Controller\StickerController::update
+  methods: POST

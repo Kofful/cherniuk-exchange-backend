@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use App\Repository\StickerRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity(repositoryClass=StickerRepository::class)
@@ -11,6 +12,8 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class Sticker
 {
+    public const MAX_CHANCE = 100_000;
+
     /**
      * @ORM\Id
      * @ORM\GeneratedValue
@@ -20,11 +23,17 @@ class Sticker
 
     /**
      * @ORM\Column(type="string", length=64)
+     * @Assert\NotBlank(
+     *     message="Sticker name is required."
+     * )
      */
     private $name;
 
     /**
      * @ORM\Column(type="integer")
+     * @Assert\NotBlank(
+     *     message="Coefficient is required."
+     * )
      */
     private $coefficient;
 
@@ -32,6 +41,11 @@ class Sticker
      * @ORM\Column(type="integer")
      */
     private $chance;
+
+    /**
+     * @ORM\Column(type="string", length=64)
+     */
+    private $path;
 
     /**
      * @ORM\Column(type="datetime_immutable", options={"default" : "CURRENT_TIMESTAMP"})
@@ -43,9 +57,23 @@ class Sticker
      */
     private $updated_at;
 
+    public function __construct()
+    {
+        $this->setCreatedAt(new \DateTimeImmutable("now"));
+        $this->setUpdatedAt(new \DateTimeImmutable("now"));
+    }
+
     public function getId(): ?int
     {
         return $this->id;
+    }
+
+    /**
+     * @param mixed $id
+     */
+    public function setId($id): void
+    {
+        $this->id = $id;
     }
 
     public function getName(): ?string
@@ -82,6 +110,22 @@ class Sticker
         $this->chance = $chance;
 
         return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getPath(): ?string
+    {
+        return $this->path;
+    }
+
+    /**
+     * @param mixed $path
+     */
+    public function setPath($path): void
+    {
+        $this->path = $path;
     }
 
     public function getCreatedAt(): ?\DateTimeImmutable
