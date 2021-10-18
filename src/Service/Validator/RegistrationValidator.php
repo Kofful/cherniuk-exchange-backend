@@ -34,10 +34,10 @@ class RegistrationValidator
     {
         $errors = [];
         if(!isset($query["code"])) {
-            array_push($errors, "Confirmation code was not passed.");
+            array_push($errors, "confirmation.code.not.passed");
         }
         if(!isset($query["uid"])) {
-            array_push($errors, "UID was not passed.");
+            array_push($errors, "confirmation.uid.not.passed");
         }
 
         return $errors;
@@ -48,10 +48,10 @@ class RegistrationValidator
         $errors = [];
 
         if(!isset($user)) {
-            array_push($errors, "User not found.");
+            array_push($errors, "user.not.found");
         }
         if($user->getConfirmationCode() != $code) {
-            array_push($errors, "Wrong confirmation code.");
+            array_push($errors, "confirmation.code.wrong");
         }
 
         return $errors;

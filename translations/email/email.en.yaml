@@ -1,0 +1,3 @@
+email:
+  subject: Email confirmation
+  message: <h3>Hello, %username%!</h3><p>Confirm registration on Exchange by clicking on <a href="%confirmPath%">this</a> link!<br></p>

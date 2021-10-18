@@ -69,13 +69,13 @@ class StickerService
     public function update(Sticker $sticker): array
     {
         if (!$sticker->getId()) {
-            return ["Sticker id not given."];
+            return ["sticker.id.not.given"];
         }
 
         $stickerEntity = $this->stickerRepository->find($sticker->getId());
 
         if (!isset($stickerEntity)) {
-            return ["Sticker with this id doesn't exist"];
+            return ["sticker.not.exist"];
         }
 
         if ($sticker->getCoefficient() !== null) {

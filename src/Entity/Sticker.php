@@ -19,43 +19,43 @@ class Sticker
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
      */
-    private $id;
+    private int $id;
 
     /**
      * @ORM\Column(type="string", length=64)
      * @Assert\NotBlank(
-     *     message="Sticker name is required."
+     *     message="sticker.name.required"
      * )
      */
-    private $name;
+    private string $name;
 
     /**
      * @ORM\Column(type="integer")
      * @Assert\NotBlank(
-     *     message="Coefficient is required."
+     *     message="sticker.coefficient.required"
      * )
      */
-    private $coefficient;
+    private int $coefficient;
 
     /**
      * @ORM\Column(type="integer")
      */
-    private $chance;
+    private int $chance;
 
     /**
      * @ORM\Column(type="string", length=64)
      */
-    private $path;
+    private string $path;
 
     /**
      * @ORM\Column(type="datetime_immutable", options={"default" : "CURRENT_TIMESTAMP"})
      */
-    private $created_at;
+    private \DateTimeImmutable $created_at;
 
     /**
      * @ORM\Column(type="datetime_immutable", options={"default" : "CURRENT_TIMESTAMP"})
      */
-    private $updated_at;
+    private \DateTimeImmutable $updated_at;
 
     public function __construct()
     {

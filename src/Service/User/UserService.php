@@ -10,7 +10,7 @@ use Symfony\Component\Serializer\Serializer;
 
 class UserService
 {
-    public function getUser(User $user)
+    public function getUser(User $user): array
     {
         $userArray = (new Serializer([new ObjectNormalizer()]))->normalize($user);
 

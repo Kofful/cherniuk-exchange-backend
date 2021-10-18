@@ -1,0 +1,27 @@
+user:
+  username:
+    too:
+      short: Username must be longer than 3 characters.
+    taken: Username is already taken.
+    required: Username is required.
+  email:
+    invalid: Email is not valid.
+    taken: Email is already taken.
+    required: Email is required.
+  password:
+    required: Password is required.
+  not.found: User not found.
+
+sticker:
+  name.required: Sticker name is required.
+  coefficient.required: Coefficient is required.
+  id.not.given: Sticker id not given.
+  not.exist: Sticker with this id doesn't exist
+
+email.sending.failed: Failed to send confirmation to email.
+
+confirmation:
+  code:
+    not.passed: Confirmation code was not passed.
+    wrong: Wrong confirmation code.
+  uid.not.passed: UID was not passed.

@@ -1,0 +1,3 @@
+email:
+  subject: Подтверждение электронной почты
+  message: <h3>Здравствуйте, %username%!</h3><p>Подтвердите регистрацию на Exchange, перейдя по <a href="%confirmPath%">этой</a> ссылке!<br></p>
