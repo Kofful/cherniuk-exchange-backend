@@ -27,15 +27,11 @@ class Mailer
      */
     public function sendConfirmationEmail(string $confirmPath, User $user)
     {
-        $html = $this->translator->trans("email.message", [], "email");
-        $html = str_replace("%username%", $user->getUsername(), $html);
-        $html = str_replace("%confirmPath%", $confirmPath, $html);
-
         $email = (new Email())
             ->from($_ENV["MAILER_FROM"])
             ->to($user->getEmail())
             ->subject($this->translator->trans('email.subject', [], "email"))
-            ->html($html);
+            ->html($this->translator->trans("email.message", ["%username%" => $user->getUsername(), "%confirmPath%" => $confirmPath ], "email"));
 
         $this->mailer->send($email);
     }
