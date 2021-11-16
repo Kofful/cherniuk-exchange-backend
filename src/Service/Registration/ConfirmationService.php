@@ -31,7 +31,7 @@ class ConfirmationService
         $user = $this->userRepository->find($query["uid"]);
 
         if(!isset($user)) {
-            return ["User not found."];
+            return ["user.not.found"];
         }
 
         $errors = $this->registrationValidator->validateConfirmedUser($user, $query["code"]);

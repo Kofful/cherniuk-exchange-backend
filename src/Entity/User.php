@@ -14,8 +14,8 @@ use Doctrine\ORM\Mapping\UniqueConstraint;
 /**
  * @ORM\Entity(repositoryClass=UserRepository::class)
  * @ORM\Table(name="users")
- * @UniqueEntity(fields="username", message="Username is already taken")
- * @UniqueEntity(fields="email", message="Email is already taken")
+ * @UniqueEntity(fields="username", message="user.username.taken")
+ * @UniqueEntity(fields="email", message="user.email.taken")
  */
 class User implements PasswordAuthenticatedUserInterface, UserInterface
 {
@@ -31,82 +31,82 @@ class User implements PasswordAuthenticatedUserInterface, UserInterface
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
      */
-    private $id;
+    private int $id;
 
     /**
      * @ORM\Column(type="string", length=64, unique=true)
      * @Assert\NotBlank(
-     *     message = "Username is required."
+     *     message = "user.username.required"
      * )
-     * @Assert\Length(min=3, minMessage="Username must be longer than 3 characters.")
+     * @Assert\Length(min=3, minMessage="user.username.too.short")
      */
-    private $username;
+    private string $username;
 
     /**
      * @ORM\Column(type="string", length=255, unique=true)
      * @Assert\NotBlank(
-     *     message = "Email is required."
+     *     message = "user.email.required"
      * )
      * @Assert\Email(
-     *     message = "Email is not valid."
+     *     message = "user.email.invalid"
      * )
      */
-    private $email;
+    private string $email;
 
     /**
      * @ORM\Column(type="string", length=256)
      * @Assert\NotBlank(
-     *     message = "Password is required."
+     *     message = "user.password.required"
      * )
      */
-    private $password;
+    private string $password;
 
     /**
      * @ORM\Column(type="integer", options={"default" : 0})
      */
-    private $wallet;
+    private int $wallet;
 
     /**
      * @ORM\Column(type="string", length=64, nullable=true)
      */
-    private $confirmation_code;
+    private string $confirmation_code;
 
     /**
      * @ORM\Column(type="integer")
      */
-    private $role_id;
+    private int $role_id;
 
     /**
      * @ORM\Column(type="integer")
      */
-    private $status_id;
+    private int $status_id;
 
     /**
      * @ORM\Column(type="datetime_immutable", nullable=true)
      */
-    private $rewarded_at;
+    private ?\DateTimeImmutable $rewarded_at;
 
     /**
      * @ORM\Column(type="datetime_immutable", options={"default" : "CURRENT_TIMESTAMP"})
      */
-    private $created_at;
+    private \DateTimeImmutable $created_at;
 
     /**
      * @ORM\Column(type="datetime_immutable", options={"default" : "CURRENT_TIMESTAMP"})
      */
-    private $updated_at;
+    private \DateTimeImmutable $updated_at;
 
     /**
      * @ORM\ManyToOne(targetEntity="Role")
      * @ORM\JoinColumn(name="role_id", referencedColumnName="id")
      */
-    private $role;
+    private Role $role;
 
     /**
      * @ORM\ManyToOne(targetEntity="UserStatus")
      * @ORM\JoinColumn(name="status_id", referencedColumnName="id")
      */
-    private $status;
+    private UserStatus $status;
 
     public function __construct()
     {
@@ -169,17 +169,17 @@ class User implements PasswordAuthenticatedUserInterface, UserInterface
     }
 
     /**
-     * @return mixed
+     * @return string
      */
-    public function getConfirmationCode()
+    public function getConfirmationCode(): string
     {
         return $this->confirmation_code;
     }
 
     /**
-     * @param mixed $confirmation_code
+     * @param string $confirmation_code
      */
-    public function setConfirmationCode($confirmation_code): void
+    public function setConfirmationCode(string $confirmation_code): void
     {
         $this->confirmation_code = $confirmation_code;
     }
@@ -244,7 +244,7 @@ class User implements PasswordAuthenticatedUserInterface, UserInterface
         return $this;
     }
 
-    public function getRole()
+    public function getRole(): Role
     {
         return $this->role;
     }
@@ -254,7 +254,7 @@ class User implements PasswordAuthenticatedUserInterface, UserInterface
         $this->role = $role;
     }
 
-    public function getStatus()
+    public function getStatus(): UserStatus
     {
         return $this->status;
     }

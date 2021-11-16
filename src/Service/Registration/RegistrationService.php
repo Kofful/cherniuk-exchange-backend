@@ -68,7 +68,7 @@ class RegistrationService
                 $_ENV["FRONTEND_DOMAIN"] . "/confirm?code={$user->getConfirmationCode()}&uid={$user->getId()}",
                 $user);
         } catch(\Throwable $t) {
-            $result["message"] = "Failed to send confirmation to email.";
+            $result["message"] = "email.sending.failed";
         }
         return $result;
     }

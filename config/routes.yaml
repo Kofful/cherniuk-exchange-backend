@@ -1,16 +1,13 @@
-#index:
-#    path: /
-#    controller: App\Controller\DefaultController::index
 api_login_check:
   path: /api/login_check
 
 register:
-  path: /api/register
+  path: /{_locale}/api/register
   controller: App\Controller\RegistrationController::index
   methods: POST
 
 confirm:
-  path: /api/confirm
+  path: /{_locale}/api/confirm
   controller: App\Controller\RegistrationController::confirmRegistration
   methods: GET
 
@@ -25,11 +22,11 @@ stickers:
   methods: GET
 
 add_sticker:
-  path: /api/sticker
+  path: /{_locale}/api/sticker
   controller: App\Controller\StickerController::add
   methods: POST
 
 update_sticker:
-  path: /api/sticker-update
+  path: /{_locale}/api/sticker-update
   controller: App\Controller\StickerController::update
   methods: POST
