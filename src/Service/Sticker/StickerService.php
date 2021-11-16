@@ -26,6 +26,14 @@ class StickerService
         $this->imageService = $imageService;
     }
 
+    public function addPath(array $sticker): array
+    {
+        $sticker["pathSmall"] = $_ENV["STICKER_PATH"] . explode(".", $sticker["path"])[0] . "_100.png";
+        $sticker["path"] = $_ENV["STICKER_PATH"] . $sticker["path"];
+
+        return $sticker;
+    }
+
     public function getAll(bool $withCoefficients, int $page, int $limit): array
     {
         $result = [];
@@ -36,7 +44,9 @@ class StickerService
 
         $hiddenColumns = $withCoefficients ? ["updated_at", "created_at"] : ["updated_at", "created_at", "chance", "coefficient"];
         foreach ($stickers as $sticker) {
-            array_push($result, $normalizer->normalize($sticker, $hiddenColumns));
+            $fetchedSticker = $normalizer->normalize($sticker, $hiddenColumns);
+            $fetchedSticker = $this->addPath($fetchedSticker);
+            array_push($result, $fetchedSticker);
         }
 
         return $result;

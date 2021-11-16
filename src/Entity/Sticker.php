@@ -19,7 +19,7 @@ class Sticker
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
      */
-    private int $id;
+    private ?int $id;
 
     /**
      * @ORM\Column(type="string", length=64)
@@ -27,7 +27,7 @@ class Sticker
      *     message="sticker.name.required"
      * )
      */
-    private string $name;
+    private ?string $name;
 
     /**
      * @ORM\Column(type="integer")
@@ -35,17 +35,17 @@ class Sticker
      *     message="sticker.coefficient.required"
      * )
      */
-    private int $coefficient;
+    private ?int $coefficient;
 
     /**
      * @ORM\Column(type="integer")
      */
-    private int $chance;
+    private ?int $chance;
 
     /**
      * @ORM\Column(type="string", length=64)
      */
-    private string $path;
+    private ?string $path;
 
     /**
      * @ORM\Column(type="datetime_immutable", options={"default" : "CURRENT_TIMESTAMP"})
@@ -59,6 +59,11 @@ class Sticker
 
     public function __construct()
     {
+        $this->setId(null);
+        $this->setName(null);
+        $this->setCoefficient(null);
+        $this->setChance(null);
+        $this->setPath(null);
         $this->setCreatedAt(new \DateTimeImmutable("now"));
         $this->setUpdatedAt(new \DateTimeImmutable("now"));
     }
@@ -68,10 +73,7 @@ class Sticker
         return $this->id;
     }
 
-    /**
-     * @param mixed $id
-     */
-    public function setId($id): void
+    public function setId(?int $id): void
     {
         $this->id = $id;
     }
@@ -81,7 +83,7 @@ class Sticker
         return $this->name;
     }
 
-    public function setName(string $name): self
+    public function setName(?string $name): self
     {
         $this->name = $name;
 
@@ -93,7 +95,7 @@ class Sticker
         return $this->coefficient;
     }
 
-    public function setCoefficient(int $coefficient): self
+    public function setCoefficient(?int $coefficient): self
     {
         $this->coefficient = $coefficient;
 
@@ -105,25 +107,19 @@ class Sticker
         return $this->chance;
     }
 
-    public function setChance(int $chance): self
+    public function setChance(?int $chance): self
     {
         $this->chance = $chance;
 
         return $this;
     }
 
-    /**
-     * @return mixed
-     */
     public function getPath(): ?string
     {
         return $this->path;
     }
 
-    /**
-     * @param mixed $path
-     */
-    public function setPath($path): void
+    public function setPath(?string $path): void
     {
         $this->path = $path;
     }

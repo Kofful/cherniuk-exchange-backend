@@ -66,7 +66,7 @@ class StickerController extends AbstractController
     }
 
     /**
-     * @Route("/api/sticker", name="update_sticker")
+     * @Route("/api/sticker-update", name="update_sticker")
      */
     public function update(ImageService $imageService, StickerService $stickerService, StickerValidator $stickerValidator, Request $request): Response
     {
@@ -75,7 +75,12 @@ class StickerController extends AbstractController
         $file = $request->files->get("sticker");
         $fileName = $imageService->saveImageToDirectory($file);
 
-        $params = isset($fileName) ? array_merge($request->request->all(), ["path" => $fileName]) : $request->request->all();
+        //remove path from params if it exists
+        $params = $request->request->all();
+        unset($params["path"]);
+
+        //add path only if there is a new file (otherwise we will delete file without uploading new one)
+        $params = isset($fileName) ? array_merge($request->request->all(), ["path" => $fileName]) : $params;
 
         $sticker = $stickerService->prepareSticker(
             $params,
@@ -84,16 +89,13 @@ class StickerController extends AbstractController
 
         $errors = $stickerValidator->validateSticker(
             $sticker,
-            array_keys(array_intersect_key(
-                $params,
-                array_flip(["name", "coefficient", "id", "path"]))
-            ));
+            ["name", "coefficient", "id"]);
 
         if (count($errors) > 0) {
             $status = 400;
             $body = $errors;
         } else {
-            $stickerService->add($sticker);
+            $stickerService->update($sticker);
         }
 
         return $this->json($body, $status);
