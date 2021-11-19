@@ -114,7 +114,7 @@ class StickerService
         return [];
     }
 
-    public function dropSticker(User $user): ?Sticker
+    public function giveStickerToUser(User $user): ?Sticker
     {
         $result = null;
         $rewardedAt = $user->getRewardedAt();

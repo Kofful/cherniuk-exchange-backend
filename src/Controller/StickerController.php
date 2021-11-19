@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\User;
 use App\Service\Image\ImageService;
+use App\Service\Inventory\InventoryService;
 use App\Service\Sticker\StickerService;
 use App\Service\User\UserService;
 use App\Service\Validator\StickerValidator;
@@ -11,6 +12,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 class StickerController extends AbstractController
 {
@@ -90,5 +92,29 @@ class StickerController extends AbstractController
         }
 
         return $this->json($body, $status);
+    }
+
+    public function giveStickerToUser(
+        StickerService $stickerService,
+        UserService $userService,
+        InventoryService $inventoryService,
+        TranslatorInterface $translator
+    ): Response
+    {
+        $status = 200;
+
+        $user = $this->getUser();
+
+        $response = $stickerService->giveStickerToUser($user);
+
+        if (isset($response)) {
+            $inventoryService->addItem($user, $response);
+            $userService->updateRewardedAt($user);
+        } else {
+            $response = [$translator->trans("sticker.cannot.receive", [], "responses")];
+            $status = 403;
+        }
+
+        return $this->json($response, $status);
     }
 }
