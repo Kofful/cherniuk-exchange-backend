@@ -22,16 +22,16 @@ stickers:
   methods: GET
 
 add_sticker:
-  path: /{_locale}/api/sticker
+  path: /{_locale}/api/sticker/add
   controller: App\Controller\StickerController::add
   methods: POST
 
 update_sticker:
-  path: /{_locale}/api/sticker-update
+  path: /{_locale}/api/sticker/update
   controller: App\Controller\StickerController::update
   methods: POST
 
-drop_sticker:
-  path: /{_locale}/api/sticker-drop
-  controller: App\Controller\UserController::dropSticker
+give_sticker:
+  path: /{_locale}/api/sticker/give
+  controller: App\Controller\StickerController::giveStickerToUser
   methods: GET
