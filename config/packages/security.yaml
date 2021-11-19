@@ -21,7 +21,7 @@ security:
                 failure_handler: lexik_jwt_authentication.handler.authentication_failure
 
         api:
-            pattern:   ^/api
+            pattern:   "^(/[a-z]{2})?/api"
             stateless: true
             jwt: ~
 
@@ -29,11 +29,11 @@ security:
             stateless: true
 
     access_control:
-        - { path: ^/api/login, roles: IS_AUTHENTICATED_ANONYMOUSLY }
-        - { path: ^/api/register, roles: IS_AUTHENTICATED_ANONYMOUSLY }
-        - { path: ^/api/confirm, roles: IS_AUTHENTICATED_ANONYMOUSLY }
-        - { path: ^/api/self, roles: [ROLE_USER, ROLE_ADMIN] }
-        - { path: ^/api/stickers, roles: IS_AUTHENTICATED_ANONYMOUSLY}
-        - { path: ^/api/sticker-drop, roles: ROLE_USER }
-        - { path: ^/api/sticker, roles: ROLE_ADMIN}
-        - { path: ^/api, roles: IS_AUTHENTICATED_FULLY }
+        - { path: "^/api/login", roles: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: "^/api/register", roles: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: "^/[a-z]{2}/api/confirm", roles: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: "^/api/self", roles: [ROLE_USER, ROLE_ADMIN] }
+        - { path: "^/api/stickers", roles: IS_AUTHENTICATED_ANONYMOUSLY}
+        - { path: "^/[a-z]{2}/api/sticker-drop", role: ROLE_USER }
+        - { path: "^/[a-z]{2}/api/sticker", roles: ROLE_ADMIN}
+        - { path: "^/api", roles: IS_AUTHENTICATED_FULLY }
