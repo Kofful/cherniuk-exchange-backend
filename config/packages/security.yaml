@@ -34,5 +34,6 @@ security:
         - { path: ^/api/confirm, roles: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/api/self, roles: [ROLE_USER, ROLE_ADMIN] }
         - { path: ^/api/stickers, roles: IS_AUTHENTICATED_ANONYMOUSLY}
+        - { path: ^/api/sticker-drop, roles: ROLE_USER }
         - { path: ^/api/sticker, roles: ROLE_ADMIN}
         - { path: ^/api, roles: IS_AUTHENTICATED_FULLY }

@@ -22,9 +22,6 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class RegistrationController extends AbstractController
 {
-    /**
-     * @Route("/api/register", name="register")
-     */
     public function index(RegistrationService $registrationService,
                           RegistrationValidator $registrationValidator, Request $request): Response
     {
@@ -44,9 +41,6 @@ class RegistrationController extends AbstractController
         return $this->json($body, $status);
     }
 
-    /**
-     * @Route("/api/confirm", name="confirm")
-     */
     public function confirmRegistration(ConfirmationService $confirmationService,
                                         RegistrationValidator $registrationValidator, Request $request): Response
     {

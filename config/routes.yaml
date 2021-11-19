@@ -11,7 +11,7 @@ confirm:
   controller: App\Controller\RegistrationController::confirmRegistration
   methods: GET
 
-admin_check:
+self:
   path: /api/self
   controller: App\Controller\UserController::index
   methods: GET
@@ -30,3 +30,8 @@ update_sticker:
   path: /{_locale}/api/sticker-update
   controller: App\Controller\StickerController::update
   methods: POST
+
+drop_sticker:
+  path: /{_locale}/api/sticker-drop
+  controller: App\Controller\UserController::dropSticker
+  methods: GET

@@ -14,9 +14,6 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class StickerController extends AbstractController
 {
-    /**
-     * @Route("/api/stickers", name="stickers")
-     */
     public function getAll(StickerService $stickerService, Request $request): Response
     {
         $page = $request->query->get("page") ?? 1;
@@ -33,9 +30,6 @@ class StickerController extends AbstractController
         ]);
     }
 
-    /**
-     * @Route("/api/sticker", name="add_sticker")
-     */
     public function add(ImageService $imageService, StickerService $stickerService, StickerValidator $stickerValidator, Request $request): Response
     {
         $body = [];
@@ -65,9 +59,6 @@ class StickerController extends AbstractController
         return $this->json($body, $status);
     }
 
-    /**
-     * @Route("/api/sticker-update", name="update_sticker")
-     */
     public function update(ImageService $imageService, StickerService $stickerService, StickerValidator $stickerValidator, Request $request): Response
     {
         $body = [];
