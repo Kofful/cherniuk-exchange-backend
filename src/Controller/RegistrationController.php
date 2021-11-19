@@ -9,6 +9,7 @@ use App\Service\CodeGenerator;
 use App\Service\Mailer;
 use App\Service\Registration\ConfirmationService;
 use App\Service\Registration\RegistrationService;
+use App\Service\StatusCode;
 use App\Service\Validator\RegistrationValidator;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -25,14 +26,14 @@ class RegistrationController extends AbstractController
     public function index(RegistrationService $registrationService,
                           RegistrationValidator $registrationValidator, Request $request): Response
     {
-        $status = 200;
+        $status = StatusCode::STATUS_OK;
         $body = [];
 
         $user = $registrationService->prepareUser($request->toArray());
         $errors = $registrationValidator->validateUser($user);
 
         if (count($errors) > 0) {
-            $status = 400;
+            $status = StatusCode::STATUS_BAD_REQUEST;
             $body = $errors;
         } else {
             $body = $registrationService->register($user);
@@ -44,18 +45,18 @@ class RegistrationController extends AbstractController
     public function confirmRegistration(ConfirmationService $confirmationService,
                                         RegistrationValidator $registrationValidator, Request $request): Response
     {
-        $status = 200;
+        $status = StatusCode::STATUS_OK;
         $body = [];
 
         $errors = $registrationValidator->validateConfirmation($request->query->all());
 
         if(count($errors) > 0) {
-            $status = 400;
+            $status = StatusCode::STATUS_BAD_REQUEST;
             $body = $errors;
         } else {
             $body = $confirmationService->confirm($request->query->all());
             if(count($body) > 0) {
-                $status = 400;
+                $status = StatusCode::STATUS_BAD_REQUEST;
             }
         }
 

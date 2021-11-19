@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\User;
 use App\Service\Image\ImageService;
 use App\Service\Inventory\InventoryService;
+use App\Service\StatusCode;
 use App\Service\Sticker\StickerService;
 use App\Service\User\UserService;
 use App\Service\Validator\StickerValidator;
@@ -35,7 +36,7 @@ class StickerController extends AbstractController
     public function add(ImageService $imageService, StickerService $stickerService, StickerValidator $stickerValidator, Request $request): Response
     {
         $body = [];
-        $status = 200;
+        $status = StatusCode::STATUS_OK;
 
         $file = $request->files->get("sticker");
         $fileName = $imageService->saveImageToDirectory($file);
@@ -48,13 +49,13 @@ class StickerController extends AbstractController
             $errors = $stickerValidator->validateSticker($sticker);
 
             if (count($errors) > 0) {
-                $status = 400;
+                $status = StatusCode::STATUS_BAD_REQUEST;
                 $body = $errors;
             } else {
                 $stickerService->add($sticker);
             }
         } else {
-            $status = 400;
+            $status = StatusCode::STATUS_BAD_REQUEST;
             $body = ["The file cannot be saved"];
         }
 
@@ -64,7 +65,7 @@ class StickerController extends AbstractController
     public function update(ImageService $imageService, StickerService $stickerService, StickerValidator $stickerValidator, Request $request): Response
     {
         $body = [];
-        $status = 200;
+        $status = StatusCode::STATUS_OK;
         $file = $request->files->get("sticker");
         $fileName = $imageService->saveImageToDirectory($file);
 
@@ -85,7 +86,7 @@ class StickerController extends AbstractController
             ["name", "coefficient", "id"]);
 
         if (count($errors) > 0) {
-            $status = 400;
+            $status = StatusCode::STATUS_BAD_REQUEST;
             $body = $errors;
         } else {
             $stickerService->update($sticker);
@@ -101,7 +102,7 @@ class StickerController extends AbstractController
         TranslatorInterface $translator
     ): Response
     {
-        $status = 200;
+        $status = StatusCode::STATUS_OK;
 
         $user = $this->getUser();
 
@@ -112,7 +113,7 @@ class StickerController extends AbstractController
             $userService->updateRewardedAt($user);
         } else {
             $response = [$translator->trans("sticker.cannot.receive", [], "responses")];
-            $status = 403;
+            $status = StatusCode::STATUS_ACCESS_DENIED;
         }
 
         return $this->json($response, $status);
