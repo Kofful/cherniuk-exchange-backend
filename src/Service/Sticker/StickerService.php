@@ -4,6 +4,7 @@ namespace App\Service\Sticker;
 
 
 use App\Entity\Sticker;
+use App\Entity\User;
 use App\Repository\StickerRepository;
 use App\Service\Normalizer\Normalizer;
 use App\Service\Image\ImageService;
@@ -18,6 +19,8 @@ class StickerService
     private StickerRepository $stickerRepository;
     private EntityManagerInterface $entityManager;
     private ImageService $imageService;
+
+    public const STICKER_COOLDOWN = 10;
 
     public function __construct(StickerRepository $stickerRepository, EntityManagerInterface $entityManager, ImageService $imageService)
     {
@@ -109,5 +112,35 @@ class StickerService
         $this->entityManager->flush();
 
         return [];
+    }
+
+    public function giveStickerToUser(User $user): ?Sticker
+    {
+        $result = null;
+        $rewardedAt = $user->getRewardedAt();
+        $difference = self::STICKER_COOLDOWN;
+
+        if (isset($rewardedAt)) {
+            $now = time();
+            $rewardedAt = $rewardedAt->getTimestamp();
+            //getting difference in minutes
+            $difference = floor(($now - $rewardedAt) / 60);
+        }
+
+        if ($difference >= self::STICKER_COOLDOWN) {
+            $stickers = $this->stickerRepository->findDroppable();
+            $max = $this->stickerRepository->getMaxDropValue();
+            $randValue = rand(1, $max);
+
+            foreach ($stickers as $sticker) {
+                $randValue -= $sticker->getChance();
+                if($randValue <= 0) {
+                    $result = $sticker;
+                    break;
+                }
+            }
+        }
+
+        return $result;
     }
 }

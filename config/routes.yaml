@@ -11,7 +11,7 @@ confirm:
   controller: App\Controller\RegistrationController::confirmRegistration
   methods: GET
 
-admin_check:
+self:
   path: /api/self
   controller: App\Controller\UserController::index
   methods: GET
@@ -22,11 +22,16 @@ stickers:
   methods: GET
 
 add_sticker:
-  path: /{_locale}/api/sticker
+  path: /{_locale}/api/sticker/add
   controller: App\Controller\StickerController::add
   methods: POST
 
 update_sticker:
-  path: /{_locale}/api/sticker-update
+  path: /{_locale}/api/sticker/update
   controller: App\Controller\StickerController::update
   methods: POST
+
+give_sticker:
+  path: /{_locale}/api/sticker/give
+  controller: App\Controller\StickerController::giveStickerToUser
+  methods: GET

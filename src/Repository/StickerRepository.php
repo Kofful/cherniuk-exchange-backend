@@ -33,4 +33,30 @@ class StickerRepository extends ServiceEntityRepository
             ->getQuery();
         return $query->getArrayResult();
     }
+
+    //get all stickers where chance is not zero
+
+    /**
+     * @return Sticker[]
+     */
+    public function findDroppable(): array
+    {
+        $queryBuilder = new QueryBuilder($this->getEntityManager());
+        $query = $queryBuilder
+            ->select("st")
+            ->from(self::STICKER_CLASS, "st")
+            ->where("st.chance > 0")
+            ->getQuery();
+        return $query->getResult();
+    }
+
+    public function getMaxDropValue(): int
+    {
+        $queryBuilder = new QueryBuilder($this->getEntityManager());
+        $query = $queryBuilder
+            ->select("SUM(st.chance)")
+            ->from(self::STICKER_CLASS, "st")
+            ->getQuery();
+        return $query->getSingleScalarResult();
+    }
 }

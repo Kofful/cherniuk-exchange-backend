@@ -16,39 +16,45 @@ class InventoryItem
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
      */
-    private $id;
+    private int $id;
 
     /**
      * @ORM\Column(type="integer")
      */
-    private $sticker_id;
+    private int $sticker_id;
 
     /**
      * @ORM\Column(type="integer")
      */
-    private $owner_id;
+    private int $owner_id;
 
     /**
      * @ORM\Column(type="datetime_immutable", options={"default" : "CURRENT_TIMESTAMP"})
      */
-    private $created_at;
+    private \DateTimeImmutable $created_at;
 
     /**
      * @ORM\Column(type="datetime_immutable", options={"default" : "CURRENT_TIMESTAMP"})
      */
-    private $updated_at;
+    private \DateTimeImmutable $updated_at;
 
     /**
      * @ORM\ManyToOne(targetEntity="User")
      * @ORM\JoinColumn(name="owner_id", referencedColumnName="id")
      */
-    private $owner;
+    private User $owner;
 
     /**
      * @ORM\ManyToOne(targetEntity="Sticker")
      * @ORM\JoinColumn(name="sticker_id", referencedColumnName="id")
      */
-    private $sticker;
+    private Sticker $sticker;
+
+    public function __construct()
+    {
+        $this->setCreatedAt(new \DateTimeImmutable());
+        $this->setUpdatedAt(new \DateTimeImmutable());
+    }
 
     public function getId(): ?int
     {
@@ -109,5 +115,25 @@ class InventoryItem
     public function preUpdate(): void
     {
         $this->setUpdatedAt(new \DateTimeImmutable('now'));
+    }
+
+    public function getOwner(): User
+    {
+        return $this->owner;
+    }
+
+    public function setOwner(User $owner): void
+    {
+        $this->owner = $owner;
+    }
+
+    public function getSticker(): Sticker
+    {
+        return $this->sticker;
+    }
+
+    public function setSticker(Sticker $sticker): void
+    {
+        $this->sticker = $sticker;
     }
 }
