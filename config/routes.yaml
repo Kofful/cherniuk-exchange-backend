@@ -37,6 +37,6 @@ give_sticker:
   methods: GET
 
 get_user_info:
-  path: /api/user/{id}
+  path: /{_locale}/api/user/{id}
   controller: App\Controller\UserController::getUserInfo
   methods: GET

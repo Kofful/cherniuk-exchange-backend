@@ -33,7 +33,7 @@ security:
         - { path: "^/api/register", roles: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: "^/[a-z]{2}/api/confirm", roles: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: "^/api/self", roles: [ROLE_USER, ROLE_ADMIN] }
-        - { path: "^/api/user", roles: IS_AUTHENTICATED_ANONYMOUSLY}
+        - { path: "^/[a-z]{2}/api/user/\\d+", roles: IS_AUTHENTICATED_ANONYMOUSLY}
         - { path: "^/api/stickers", roles: IS_AUTHENTICATED_ANONYMOUSLY}
         - { path: "^/[a-z]{2}/api/sticker/give", role: ROLE_USER }
         - { path: "^/[a-z]{2}/api/sticker/add", roles: ROLE_ADMIN}
