@@ -1,2 +1,5 @@
 sticker:
   cannot.receive: "You are not permitted to receive a sticker!"
+
+user:
+  not.found: "User not found."

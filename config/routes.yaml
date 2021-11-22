@@ -35,3 +35,8 @@ give_sticker:
   path: /{_locale}/api/sticker/give
   controller: App\Controller\StickerController::giveStickerToUser
   methods: GET
+
+get_user_info:
+  path: /{_locale}/api/user/{id}
+  controller: App\Controller\UserController::getUserInfo
+  methods: GET
