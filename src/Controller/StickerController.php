@@ -111,6 +111,7 @@ class StickerController extends AbstractController
         if (isset($response)) {
             $inventoryService->addItem($user, $response);
             $userService->updateRewardedAt($user);
+            $response = $response->getId();
         } else {
             $response = [$translator->trans("sticker.cannot.receive", [], "responses")];
             $status = StatusCode::STATUS_ACCESS_DENIED;
