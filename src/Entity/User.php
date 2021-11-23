@@ -86,6 +86,7 @@ class User implements PasswordAuthenticatedUserInterface, UserInterface
     private int $status_id;
 
     /**
+     * @Groups("self")
      * @ORM\Column(type="datetime_immutable", nullable=true)
      */
     private ?\DateTimeImmutable $rewarded_at;

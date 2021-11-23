@@ -17,12 +17,9 @@ class StickerRepository extends ServiceEntityRepository
 {
     public const STICKER_CLASS = "App\\Entity\\Sticker";
 
-    private QueryBuilder $queryBuilder;
-
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, Sticker::class);
-        $this->queryBuilder = new QueryBuilder($this->getEntityManager());
     }
 
     /**
@@ -32,7 +29,8 @@ class StickerRepository extends ServiceEntityRepository
      */
     public function findPage(int $page, int $limit): array
     {
-        $query = $this->queryBuilder
+        $queryBuilder = new QueryBuilder($this->getEntityManager());
+        $query = $queryBuilder
             ->select("st")
             ->from(self::STICKER_CLASS, "st")
             ->orderBy("st.id", "ASC")
@@ -49,7 +47,8 @@ class StickerRepository extends ServiceEntityRepository
      */
     public function findDroppable(): array
     {
-        $query = $this->queryBuilder
+        $queryBuilder = new QueryBuilder($this->getEntityManager());
+        $query = $queryBuilder
             ->select("st")
             ->from(self::STICKER_CLASS, "st")
             ->where("st.chance > 0")
@@ -59,7 +58,8 @@ class StickerRepository extends ServiceEntityRepository
 
     public function getMaxDropValue(): int
     {
-        $query = $this->queryBuilder
+        $queryBuilder = new QueryBuilder($this->getEntityManager());
+        $query = $queryBuilder
             ->select("SUM(st.chance)")
             ->from(self::STICKER_CLASS, "st")
             ->getQuery();
