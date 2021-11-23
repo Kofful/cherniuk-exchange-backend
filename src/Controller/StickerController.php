@@ -36,7 +36,13 @@ class StickerController extends AbstractController
         ], StatusCode::STATUS_OK, [], ["groups" => $groups]);
     }
 
-    public function add(ImageService $imageService, StickerService $stickerService, StickerValidator $stickerValidator, Request $request): Response
+    public function add(
+        ImageService $imageService,
+        StickerService $stickerService,
+        StickerValidator $stickerValidator,
+        TranslatorInterface $translator,
+        Request $request)
+    : Response
     {
         $body = [];
         $status = StatusCode::STATUS_OK;
@@ -59,7 +65,7 @@ class StickerController extends AbstractController
             }
         } else {
             $status = StatusCode::STATUS_BAD_REQUEST;
-            $body = ["The file cannot be saved"];
+            $body = [$translator->trans("file.cannot.save", [], "responses")];
         }
 
         return $this->json($body, $status);

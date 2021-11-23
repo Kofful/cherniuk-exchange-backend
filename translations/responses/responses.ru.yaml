@@ -3,3 +3,6 @@ sticker:
 
 user:
   not.found: "Пользователь не найден."
+
+file:
+  cannot.save: "Файл не может быть сохранен"
