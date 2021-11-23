@@ -16,15 +16,23 @@ use Doctrine\Persistence\ManagerRegistry;
 class StickerRepository extends ServiceEntityRepository
 {
     public const STICKER_CLASS = "App\\Entity\\Sticker";
+
+    private QueryBuilder $queryBuilder;
+
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, Sticker::class);
+        $this->queryBuilder = new QueryBuilder($this->getEntityManager());
     }
 
+    /**
+     * @param int $page
+     * @param int $limit
+     * @return array
+     */
     public function findPage(int $page, int $limit): array
     {
-        $queryBuilder = new QueryBuilder($this->getEntityManager());
-        $query = $queryBuilder
+        $query = $this->queryBuilder
             ->select("st")
             ->from(self::STICKER_CLASS, "st")
             ->orderBy("st.id", "ASC")
@@ -34,15 +42,14 @@ class StickerRepository extends ServiceEntityRepository
         return $query->getArrayResult();
     }
 
-    //get all stickers where chance is not zero
 
     /**
+     * get all stickers where chance is not zero
      * @return Sticker[]
      */
     public function findDroppable(): array
     {
-        $queryBuilder = new QueryBuilder($this->getEntityManager());
-        $query = $queryBuilder
+        $query = $this->queryBuilder
             ->select("st")
             ->from(self::STICKER_CLASS, "st")
             ->where("st.chance > 0")
@@ -52,8 +59,7 @@ class StickerRepository extends ServiceEntityRepository
 
     public function getMaxDropValue(): int
     {
-        $queryBuilder = new QueryBuilder($this->getEntityManager());
-        $query = $queryBuilder
+        $query = $this->queryBuilder
             ->select("SUM(st.chance)")
             ->from(self::STICKER_CLASS, "st")
             ->getQuery();
