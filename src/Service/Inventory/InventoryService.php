@@ -5,15 +5,15 @@ namespace App\Service\Inventory;
 use App\Entity\InventoryItem;
 use App\Entity\Sticker;
 use App\Entity\User;
-use Doctrine\ORM\EntityManagerInterface;
+use App\Repository\InventoryItemRepository;
 
 class InventoryService
 {
-    private EntityManagerInterface $entityManager;
+    private InventoryItemRepository $inventoryItemRepository;
 
-    public function __construct(EntityManagerInterface $entityManager)
+    public function __construct(InventoryItemRepository $inventoryItemRepository)
     {
-        $this->entityManager = $entityManager;
+        $this->inventoryItemRepository = $inventoryItemRepository;
     }
 
     public function addItem(User $user, Sticker $sticker): void
@@ -22,7 +22,11 @@ class InventoryService
         $newItem->setOwner($user);
         $newItem->setSticker($sticker);
 
-        $this->entityManager->persist($newItem);
-        $this->entityManager->flush();
+        $this->inventoryItemRepository->addItem($newItem);
+    }
+
+    public function getUserItems($userId): array
+    {
+        return $this->inventoryItemRepository->getItemsByUserId($userId);
     }
 }
