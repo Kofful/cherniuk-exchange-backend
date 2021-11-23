@@ -30,16 +30,19 @@ class InventoryItemRepository extends ServiceEntityRepository
     }
 
     /**
-     * @param $userId
+     * @param int $userId
      * @return InventoryItem[]
      */
-    public function getItemsByUserId($userId): array
+    public function getItemsByUserId(int $userId, int $page): array
     {
+        $limit = 25;
         $queryBuilder = new QueryBuilder($this->getEntityManager());
         $query = $queryBuilder
             ->select("it")
             ->from(self::INVENTORY_ITEM_CLASS, "it")
             ->where("it.owner_id = $userId")
+            ->setFirstResult(($page - 1) * $limit)
+            ->setMaxResults($limit)
             ->getQuery();
         return $query->getResult();
     }

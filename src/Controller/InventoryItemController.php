@@ -18,11 +18,13 @@ class InventoryItemController extends AbstractController
         $response = [];
         $status = StatusCode::STATUS_OK;
 
+        $page = $request->query->get("page") ?? 1;
+
         $userId = $request->attributes->get("id");
         $user = $userRepository->find($userId);
 
         if(isset($user)) {
-            $response = $inventoryService->getUserItems($user->getId());
+            $response = $inventoryService->getUserItems($user->getId(), $page);
         } else {
             $status = StatusCode::STATUS_BAD_REQUEST;
             $response = [$translator->trans("user.not.found", [], "responses")];

@@ -25,8 +25,8 @@ class InventoryService
         $this->inventoryItemRepository->addItem($newItem);
     }
 
-    public function getUserItems($userId): array
+    public function getUserItems(int $userId, int $page): array
     {
-        return $this->inventoryItemRepository->getItemsByUserId($userId);
+        return $this->inventoryItemRepository->getItemsByUserId($userId, $page);
     }
 }
