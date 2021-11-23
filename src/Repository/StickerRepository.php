@@ -28,7 +28,7 @@ class StickerRepository extends ServiceEntityRepository
     /**
      * @param int $page
      * @param int $limit
-     * @return array
+     * @return Sticker[]
      */
     public function findPage(int $page, int $limit): array
     {
@@ -39,7 +39,7 @@ class StickerRepository extends ServiceEntityRepository
             ->setFirstResult(($page - 1) * $limit)
             ->setMaxResults($limit)
             ->getQuery();
-        return $query->getArrayResult();
+        return $query->getResult();
     }
 
 

@@ -24,13 +24,16 @@ class StickerController extends AbstractController
         $user = $this->getUser();
 
         $withCoefficients = isset($user) && in_array(User::ADMIN_ROLE_NAME, $this->getUser()->getRoles());
-        $stickers = $stickerService->getAll($withCoefficients, $page, $limit);
+
+        $stickers = $stickerService->getAll($page, $limit);
         $count = $stickerService->getCount();
+
+        $groups = $withCoefficients ? ["allStickers", "allStickersAdmin"] : ["allStickers"];
 
         return $this->json([
             "stickers" => $stickers,
             "count" => $count
-        ]);
+        ], StatusCode::STATUS_OK, [], ["groups" => $groups]);
     }
 
     public function add(ImageService $imageService, StickerService $stickerService, StickerValidator $stickerValidator, Request $request): Response

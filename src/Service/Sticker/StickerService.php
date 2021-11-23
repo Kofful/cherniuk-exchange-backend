@@ -6,10 +6,7 @@ namespace App\Service\Sticker;
 use App\Entity\Sticker;
 use App\Entity\User;
 use App\Repository\StickerRepository;
-use App\Service\Normalizer\Normalizer;
 use App\Service\Image\ImageService;
-use App\Service\Validator\RegistrationValidator;
-use App\Service\Validator\StickerValidator;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 use Symfony\Component\Serializer\Serializer;
@@ -29,30 +26,22 @@ class StickerService
         $this->imageService = $imageService;
     }
 
-    public function addPath(array $sticker): array
+    public function addPath(Sticker $sticker): void
     {
-        $sticker["pathSmall"] = $_ENV["STICKER_PATH"] . explode(".", $sticker["path"])[0] . "_100.png";
-        $sticker["path"] = $_ENV["STICKER_PATH"] . $sticker["path"];
-
-        return $sticker;
+        $oldPath = $sticker->getPath();
+        $sticker->setPathSmall($_ENV["STICKER_PATH"] . explode(".", $oldPath)[0] . "_100.png");
+        $sticker->setPath( $_ENV["STICKER_PATH"] . $oldPath);
     }
 
-    public function getAll(bool $withCoefficients, int $page, int $limit): array
+    public function getAll(int $page, int $limit): array
     {
-        $result = [];
-
-        $normalizer = new Normalizer();
-
         $stickers = $this->stickerRepository->findPage($page, $limit);
 
-        $hiddenColumns = $withCoefficients ? ["updated_at", "created_at"] : ["updated_at", "created_at", "chance", "coefficient"];
         foreach ($stickers as $sticker) {
-            $fetchedSticker = $normalizer->normalize($sticker, $hiddenColumns);
-            $fetchedSticker = $this->addPath($fetchedSticker);
-            array_push($result, $fetchedSticker);
+            $this->addPath($sticker);
         }
 
-        return $result;
+        return $stickers;
     }
 
     public function getCount(): int
@@ -63,8 +52,9 @@ class StickerService
     public function prepareSticker(array $query, array $whitelist): Sticker
     {
         $query = array_intersect_key($query, array_flip($whitelist));
-        return (new Serializer([new ObjectNormalizer()]))
-            ->denormalize($query, "App\Entity\Sticker");
+        $serializer = new Serializer([new ObjectNormalizer()]);
+
+        return $serializer->denormalize($query, "App\Entity\Sticker");
     }
 
     public function add(Sticker $sticker): array
