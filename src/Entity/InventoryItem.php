@@ -21,13 +21,11 @@ class InventoryItem
     private int $id;
 
     /**
-     * @Groups("userItems")
      * @ORM\Column(type="integer")
      */
     private int $sticker_id;
 
     /**
-     * @Groups("userItems")
      * @ORM\Column(type="integer")
      */
     private int $owner_id;
