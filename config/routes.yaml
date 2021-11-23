@@ -36,6 +36,11 @@ give_sticker:
   controller: App\Controller\StickerController::giveStickerToUser
   methods: GET
 
+get_user_items:
+  path: /{_locale}/api/user/{id}/items
+  controller: App\Controller\InventoryItemController::getUserItems
+  methods: GET
+
 get_user_info:
   path: /{_locale}/api/user/{id}
   controller: App\Controller\UserController::getUserInfo

@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use App\Repository\InventoryItemRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 /**
  * @ORM\Entity(repositoryClass=InventoryItemRepository::class)
@@ -12,6 +13,7 @@ use Doctrine\ORM\Mapping as ORM;
 class InventoryItem
 {
     /**
+     * @Groups("userItems")
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
@@ -19,11 +21,13 @@ class InventoryItem
     private int $id;
 
     /**
+     * @Groups("userItems")
      * @ORM\Column(type="integer")
      */
     private int $sticker_id;
 
     /**
+     * @Groups("userItems")
      * @ORM\Column(type="integer")
      */
     private int $owner_id;
@@ -45,6 +49,7 @@ class InventoryItem
     private User $owner;
 
     /**
+     * @Groups("userItems")
      * @ORM\ManyToOne(targetEntity="Sticker")
      * @ORM\JoinColumn(name="sticker_id", referencedColumnName="id")
      */
