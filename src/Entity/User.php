@@ -10,6 +10,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\UniqueConstraint;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 /**
  * @ORM\Entity(repositoryClass=UserRepository::class)
@@ -27,6 +28,7 @@ class User implements PasswordAuthenticatedUserInterface, UserInterface
     public const DEFAULT_ROLE_NAME = "ROLE_USER";
     public const ADMIN_ROLE_NAME = "ROLE_ADMIN";
     /**
+     * @Groups({"self", "profile"})
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
@@ -34,6 +36,7 @@ class User implements PasswordAuthenticatedUserInterface, UserInterface
     private int $id;
 
     /**
+     * @Groups({"self", "profile"})
      * @ORM\Column(type="string", length=64, unique=true)
      * @Assert\NotBlank(
      *     message = "user.username.required"
@@ -62,6 +65,7 @@ class User implements PasswordAuthenticatedUserInterface, UserInterface
     private string $password;
 
     /**
+     * @Groups("self")
      * @ORM\Column(type="integer", options={"default" : 0})
      */
     private int $wallet;
@@ -97,6 +101,7 @@ class User implements PasswordAuthenticatedUserInterface, UserInterface
     private \DateTimeImmutable $updated_at;
 
     /**
+     * @Groups("self")
      * @ORM\ManyToOne(targetEntity="Role")
      * @ORM\JoinColumn(name="role_id", referencedColumnName="id")
      */
