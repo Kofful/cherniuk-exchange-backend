@@ -16,7 +16,7 @@ class Sticker
     public const MAX_CHANCE = 100_000;
 
     /**
-     * @Groups("userItems")
+     * @Groups({"userItems", "allStickers"})
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
@@ -24,7 +24,7 @@ class Sticker
     private ?int $id;
 
     /**
-     * @Groups("userItems")
+     * @Groups({"userItems", "allStickers"})
      * @ORM\Column(type="string", length=64)
      * @Assert\NotBlank(
      *     message="sticker.name.required"
@@ -33,6 +33,7 @@ class Sticker
     private ?string $name;
 
     /**
+     * @Groups("allStickersAdmin")
      * @ORM\Column(type="integer")
      * @Assert\NotBlank(
      *     message="sticker.coefficient.required"
@@ -41,15 +42,21 @@ class Sticker
     private ?int $coefficient;
 
     /**
+     * @Groups("allStickersAdmin")
      * @ORM\Column(type="integer")
      */
     private ?int $chance;
 
     /**
-     * @Groups("userItems")
+     * @Groups({"userItems", "allStickers"})
      * @ORM\Column(type="string", length=64)
      */
     private ?string $path;
+
+    /**
+     * @Groups({"allStickers"})
+     */
+    private ?string $pathSmall;
 
     /**
      * @ORM\Column(type="datetime_immutable", options={"default" : "CURRENT_TIMESTAMP"})
@@ -158,5 +165,15 @@ class Sticker
     public function preUpdate(): void
     {
         $this->setUpdatedAt(new \DateTimeImmutable('now'));
+    }
+
+    public function getPathSmall(): ?string
+    {
+        return $this->pathSmall;
+    }
+
+    public function setPathSmall(?string $pathSmall): void
+    {
+        $this->pathSmall = $pathSmall;
     }
 }

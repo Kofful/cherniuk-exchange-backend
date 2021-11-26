@@ -16,11 +16,17 @@ use Doctrine\Persistence\ManagerRegistry;
 class StickerRepository extends ServiceEntityRepository
 {
     public const STICKER_CLASS = "App\\Entity\\Sticker";
+
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, Sticker::class);
     }
 
+    /**
+     * @param int $page
+     * @param int $limit
+     * @return Sticker[]
+     */
     public function findPage(int $page, int $limit): array
     {
         $queryBuilder = new QueryBuilder($this->getEntityManager());
@@ -31,12 +37,12 @@ class StickerRepository extends ServiceEntityRepository
             ->setFirstResult(($page - 1) * $limit)
             ->setMaxResults($limit)
             ->getQuery();
-        return $query->getArrayResult();
+        return $query->getResult();
     }
 
-    //get all stickers where chance is not zero
 
     /**
+     * get all stickers where chance is not zero
      * @return Sticker[]
      */
     public function findDroppable(): array
