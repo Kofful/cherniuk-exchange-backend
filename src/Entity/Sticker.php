@@ -5,6 +5,7 @@ namespace App\Entity;
 use App\Repository\StickerRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 /**
  * @ORM\Entity(repositoryClass=StickerRepository::class)
@@ -15,6 +16,7 @@ class Sticker
     public const MAX_CHANCE = 100_000;
 
     /**
+     * @Groups("userItems")
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
@@ -22,6 +24,7 @@ class Sticker
     private ?int $id;
 
     /**
+     * @Groups("userItems")
      * @ORM\Column(type="string", length=64)
      * @Assert\NotBlank(
      *     message="sticker.name.required"
@@ -43,6 +46,7 @@ class Sticker
     private ?int $chance;
 
     /**
+     * @Groups("userItems")
      * @ORM\Column(type="string", length=64)
      */
     private ?string $path;
