@@ -25,7 +25,7 @@ class RegistrationValidator
         $errors = $this->validator->validate($user);
 
         if (count($errors) > 0) {
-            foreach($errors as $error) {
+            foreach ($errors as $error) {
                 array_push($result, $error->getMessage());
             }
         }
@@ -36,10 +36,10 @@ class RegistrationValidator
     public function validateConfirmation(array $query): array
     {
         $errors = [];
-        if(!isset($query["code"])) {
+        if (!isset($query["code"])) {
             array_push($errors, $this->translator->trans("confirmation.code.not.passed", [], "validators"));
         }
-        if(!isset($query["uid"])) {
+        if (!isset($query["uid"])) {
             array_push($errors, $this->translator->trans("confirmation.uid.not.passed", [], "validators"));
         }
 
@@ -50,10 +50,10 @@ class RegistrationValidator
     {
         $errors = [];
 
-        if(!isset($user)) {
+        if (!isset($user)) {
             array_push($errors, $this->translator->trans("user.not.found", [], "validators"));
         }
-        if($user->getConfirmationCode() != $code) {
+        if ($user->getConfirmationCode() != $code) {
             array_push($errors, $this->translator->trans("confirmation.code.wrong", [], "validators"));
         }
 

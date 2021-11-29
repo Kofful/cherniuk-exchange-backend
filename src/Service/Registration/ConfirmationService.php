@@ -17,8 +17,12 @@ class ConfirmationService
     private EntityManagerInterface $entityManager;
     private RegistrationValidator $registrationValidator;
 
-    public function __construct(UserRepository $userRepository, UserStatusRepository $userStatusRepository,
-                                EntityManagerInterface $entityManager, RegistrationValidator $registrationValidator) {
+    public function __construct(
+        UserRepository $userRepository,
+        UserStatusRepository $userStatusRepository,
+        EntityManagerInterface $entityManager,
+        RegistrationValidator $registrationValidator
+    ) {
         $this->userRepository = $userRepository;
         $this->userStatusRepository = $userStatusRepository;
         $this->entityManager = $entityManager;
@@ -30,13 +34,13 @@ class ConfirmationService
         $result = [];
         $user = $this->userRepository->find($query["uid"]);
 
-        if(!isset($user)) {
+        if (!isset($user)) {
             return ["user.not.found"];
         }
 
         $errors = $this->registrationValidator->validateConfirmedUser($user, $query["code"]);
 
-        if(count($errors) > 0) {
+        if (count($errors) > 0) {
             $result = $errors;
         } else {
             $status = $this->userStatusRepository->find(User::CONFIRMED_STATUS_ID);

@@ -49,9 +49,18 @@ class ImageService
         imagesavealpha($resizedStandard, true);
         $transparent = imagecolorallocatealpha($resizedStandard, 255, 255, 255, 127);
         imagefilledrectangle($resizedStandard, 0, 0, $size, $size, $transparent);
-        imagecopyresampled($resizedStandard, $original,
-            0, 0, 0, 0,
-            $size, $size, $originalSize[0], $originalSize[1]);
+        imagecopyresampled(
+            $resizedStandard,
+            $original,
+            0,
+            0,
+            0,
+            0,
+            $size,
+            $size,
+            $originalSize[0],
+            $originalSize[1]
+        );
         imagepng($resizedStandard, $this->targetDir . $file->getName() . "$suffix." . $file->getExtension());
     }
 }

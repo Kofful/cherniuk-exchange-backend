@@ -31,10 +31,13 @@ class RegistrationService
     private EntityManagerInterface $entityManager;
     private Mailer $mailer;
 
-    public function __construct(UserPasswordHasherInterface $passwordHasher,
-                                RoleRepository $roleRepository, UserStatusRepository $userStatusRepository,
-                                EntityManagerInterface $entityManager, Mailer $mailer)
-    {
+    public function __construct(
+        UserPasswordHasherInterface $passwordHasher,
+        RoleRepository $roleRepository,
+        UserStatusRepository $userStatusRepository,
+        EntityManagerInterface $entityManager,
+        Mailer $mailer
+    ) {
         $this->passwordHasher = $passwordHasher;
         $this->roleRepository = $roleRepository;
         $this->userStatusRepository = $userStatusRepository;
@@ -46,7 +49,7 @@ class RegistrationService
     {
         $query = array_intersect_key($query, array_flip(["username", "email", "password"]));
         return (new Serializer([new ObjectNormalizer()]))
-            ->denormalize($query,"App\Entity\User");
+            ->denormalize($query, "App\Entity\User");
     }
 
     public function register(User $user): array
@@ -66,8 +69,9 @@ class RegistrationService
         try {
             $this->mailer->sendConfirmationEmail(
                 $_ENV["FRONTEND_DOMAIN"] . "/confirm?code={$user->getConfirmationCode()}&uid={$user->getId()}",
-                $user);
-        } catch(\Throwable $t) {
+                $user
+            );
+        } catch (\Throwable $t) {
             $result["message"] = "email.sending.failed";
         }
         return $result;

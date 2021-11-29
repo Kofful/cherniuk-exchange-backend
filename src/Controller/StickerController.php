@@ -41,9 +41,8 @@ class StickerController extends AbstractController
         StickerService $stickerService,
         StickerValidator $stickerValidator,
         TranslatorInterface $translator,
-        Request $request)
-    : Response
-    {
+        Request $request
+    ): Response {
         $body = [];
         $status = StatusCode::STATUS_OK;
 
@@ -71,8 +70,12 @@ class StickerController extends AbstractController
         return $this->json($body, $status);
     }
 
-    public function update(ImageService $imageService, StickerService $stickerService, StickerValidator $stickerValidator, Request $request): Response
-    {
+    public function update(
+        ImageService $imageService,
+        StickerService $stickerService,
+        StickerValidator $stickerValidator,
+        Request $request
+    ): Response {
         $body = [];
         $status = StatusCode::STATUS_OK;
         $file = $request->files->get("sticker");
@@ -92,7 +95,8 @@ class StickerController extends AbstractController
 
         $errors = $stickerValidator->validateSticker(
             $sticker,
-            ["name", "coefficient", "id"]);
+            ["name", "coefficient", "id"]
+        );
 
         if (count($errors) > 0) {
             $status = StatusCode::STATUS_BAD_REQUEST;
@@ -109,8 +113,7 @@ class StickerController extends AbstractController
         UserService $userService,
         InventoryService $inventoryService,
         TranslatorInterface $translator
-    ): Response
-    {
+    ): Response {
         $status = StatusCode::STATUS_OK;
 
         $user = $this->getUser();
