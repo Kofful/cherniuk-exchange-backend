@@ -16,3 +16,8 @@
 ###< lexik/jwt-authentication-bundle ###
 
 /public/stickers
+
+###> phpunit/phpunit ###
+/phpunit.xml
+.phpunit.result.cache
+###< phpunit/phpunit ###
