@@ -9,5 +9,13 @@ actor_suffix: Tester
 extensions:
     enabled:
         - Codeception\Extension\RunFailed
+        - App\Tests\DatabaseMigrationExtension
+modules:
+    enabled:
+        - Symfony:
+              app_path: 'src'
+              part: services
+              environment: "testing"
+
 params:
     - .env.test.local

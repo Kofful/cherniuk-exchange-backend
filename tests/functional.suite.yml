@@ -10,7 +10,7 @@ modules:
     enabled:
         - Symfony:
             app_path: 'src'
-            environment: 'test'
+            environment: 'testing'
 #        - Doctrine2:
 #            depends: Symfony
 #            cleanup: true
