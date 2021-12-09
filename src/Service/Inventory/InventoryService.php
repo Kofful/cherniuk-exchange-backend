@@ -16,6 +16,17 @@ class InventoryService
         $this->inventoryItemRepository = $inventoryItemRepository;
     }
 
+    public function addStickerPath(Sticker $sticker): void
+    {
+        $oldPath = $sticker->getPath();
+
+        //check if we haven't changed sticker path already
+        //(this can happen because we change sticker fields, but there may be many items with same stickers)
+        if(strpos($oldPath, "/") === false) {
+            $sticker->setPath($_ENV["STICKER_PATH"] . $oldPath);
+        }
+    }
+
     public function addItem(User $user, Sticker $sticker): void
     {
         $newItem = new InventoryItem();
@@ -27,6 +38,10 @@ class InventoryService
 
     public function getUserItems(int $userId, int $page): array
     {
-        return $this->inventoryItemRepository->getItemsByUserId($userId, $page);
+        $items = $this->inventoryItemRepository->getItemsByUserId($userId, $page);
+        foreach($items as $item) {
+            $this->addStickerPath($item->getSticker());
+        }
+        return $items;
     }
 }
