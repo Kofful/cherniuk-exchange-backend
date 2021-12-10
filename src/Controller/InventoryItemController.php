@@ -27,14 +27,25 @@ class InventoryItemController extends AbstractController
 
         $userId = $request->attributes->get("id");
         $user = $userRepository->find($userId);
+        $isInOwnProfile = false;
 
         if (isset($user)) {
-            $response = $inventoryService->getUserItems($user->getId(), $page);
+            $isInOwnProfile = $this->getUser() && $this->getUser()->getId() == $user->getId();
+            if ($isInOwnProfile) {
+                $response = $inventoryService->getOwnItems($user->getId(), $page);
+            } else {
+                $response = $inventoryService->getUserItems($user->getId(), $page);
+            }
         } else {
             $status = StatusCode::STATUS_BAD_REQUEST;
             $response = [$translator->trans("user.not.found", [], "responses")];
         }
 
-        return $this->json($response, $status, [], ["groups" => "userItems"]);
+        $groups = [
+            "userItems",
+            $isInOwnProfile ? "ownItems" : null
+        ];
+
+        return $this->json($response, $status, [], ["groups" => $groups]);
     }
 }

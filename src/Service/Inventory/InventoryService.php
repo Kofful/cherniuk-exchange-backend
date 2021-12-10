@@ -22,8 +22,20 @@ class InventoryService
 
         //check if we haven't changed sticker path already
         //(this can happen because we change sticker fields, but there may be many items with same stickers)
-        if(strpos($oldPath, "/") === false) {
+        if (strpos($oldPath, "/") === false) {
             $sticker->setPath($_ENV["STICKER_PATH"] . $oldPath);
+        }
+    }
+
+    public function addStickerPrice(Sticker $sticker): void
+    {
+        if (!$sticker->getPrice()) {
+            // price is counted by formula
+            // coefficient / 10 + 1,
+            // so it can be a number from 1 to 10_000 (10% of max coefficient)
+            // to be a low number to sell
+            $price = floor($sticker->getCoefficient() / 10) + 1;
+            $sticker->setPrice($price);
         }
     }
 
@@ -39,7 +51,17 @@ class InventoryService
     public function getUserItems(int $userId, int $page): array
     {
         $items = $this->inventoryItemRepository->getItemsByUserId($userId, $page);
-        foreach($items as $item) {
+        foreach ($items as $item) {
+            $this->addStickerPath($item->getSticker());
+        }
+        return $items;
+    }
+
+    public function getOwnItems(int $userId, int $page): array
+    {
+        $items = $this->inventoryItemRepository->getItemsByUserId($userId, $page);
+        foreach ($items as $item) {
+            $this->addStickerPrice($item->getSticker());
             $this->addStickerPath($item->getSticker());
         }
         return $items;

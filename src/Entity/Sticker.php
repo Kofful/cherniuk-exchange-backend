@@ -59,6 +59,11 @@ class Sticker
     private ?string $pathSmall;
 
     /**
+     * @Groups("ownItems")
+     */
+    private ?int $price = null;
+
+    /**
      * @ORM\Column(type="datetime_immutable", options={"default" : "CURRENT_TIMESTAMP"})
      */
     private \DateTimeImmutable $created_at;
@@ -175,5 +180,15 @@ class Sticker
     public function setPathSmall(?string $pathSmall): void
     {
         $this->pathSmall = $pathSmall;
+    }
+
+    public function getPrice(): ?int
+    {
+        return $this->price;
+    }
+
+    public function setPrice(?int $price): void
+    {
+        $this->price = $price;
     }
 }
