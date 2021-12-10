@@ -19,14 +19,17 @@ class UserController extends AbstractController
         ], StatusCode::STATUS_OK, [], ["groups" => "self"]);
     }
 
-    public function getUserInfo(UserRepository $userRepository, TranslatorInterface $translator, Request $request): Response
-    {
+    public function getUserInfo(
+        UserRepository $userRepository,
+        TranslatorInterface $translator,
+        Request $request
+    ): Response {
         $status = StatusCode::STATUS_OK;
 
         $userId = $request->attributes->get("id");
         $user = $userRepository->find($userId);
 
-        if(!isset($user)) {
+        if (!isset($user)) {
             $status = StatusCode::STATUS_BAD_REQUEST;
             $user = [$translator->trans("user.not.found", [], "responses")];
         }

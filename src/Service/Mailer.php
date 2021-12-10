@@ -31,7 +31,10 @@ class Mailer
             ->from($_ENV["MAILER_FROM"])
             ->to($user->getEmail())
             ->subject($this->translator->trans('email.subject', [], "email"))
-            ->html($this->translator->trans("email.message", ["%username%" => $user->getUsername(), "%confirmPath%" => $confirmPath ], "email"));
+            ->html($this->translator->trans(
+                "email.message",
+                ["%username%" => $user->getUsername(), "%confirmPath%" => $confirmPath ],
+                "email"));
 
         $this->mailer->send($email);
     }

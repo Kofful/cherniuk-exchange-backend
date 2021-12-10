@@ -13,8 +13,13 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 
 class InventoryItemController extends AbstractController
 {
-    public function getUserItems(InventoryService $inventoryService, UserRepository $userRepository, TranslatorInterface $translator, SerializerInterface $serializer, Request $request): Response
-    {
+    public function getUserItems(
+        InventoryService $inventoryService,
+        UserRepository $userRepository,
+        TranslatorInterface $translator,
+        SerializerInterface $serializer,
+        Request $request
+    ): Response {
         $response = [];
         $status = StatusCode::STATUS_OK;
 
@@ -23,7 +28,7 @@ class InventoryItemController extends AbstractController
         $userId = $request->attributes->get("id");
         $user = $userRepository->find($userId);
 
-        if(isset($user)) {
+        if (isset($user)) {
             $response = $inventoryService->getUserItems($user->getId(), $page);
         } else {
             $status = StatusCode::STATUS_BAD_REQUEST;

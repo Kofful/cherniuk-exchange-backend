@@ -18,7 +18,7 @@ class StickerValidator
     {
         $result = [];
 
-        foreach($properties as $property) {
+        foreach ($properties as $property) {
             $errors = $this->validator->validateProperty($sticker, $property);
 
             if (count($errors) > 0) {

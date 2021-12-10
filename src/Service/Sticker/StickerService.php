@@ -2,7 +2,6 @@
 
 namespace App\Service\Sticker;
 
-
 use App\Entity\Sticker;
 use App\Entity\User;
 use App\Repository\StickerRepository;
@@ -19,8 +18,11 @@ class StickerService
 
     public const STICKER_COOLDOWN = 10;
 
-    public function __construct(StickerRepository $stickerRepository, EntityManagerInterface $entityManager, ImageService $imageService)
-    {
+    public function __construct(
+        StickerRepository $stickerRepository,
+        EntityManagerInterface $entityManager,
+        ImageService $imageService
+    ) {
         $this->stickerRepository = $stickerRepository;
         $this->entityManager = $entityManager;
         $this->imageService = $imageService;
@@ -30,7 +32,7 @@ class StickerService
     {
         $oldPath = $sticker->getPath();
         $sticker->setPathSmall($_ENV["STICKER_PATH"] . explode(".", $oldPath)[0] . "_100.png");
-        $sticker->setPath( $_ENV["STICKER_PATH"] . $oldPath);
+        $sticker->setPath($_ENV["STICKER_PATH"] . $oldPath);
     }
 
     public function getAll(int $page, int $limit): array
@@ -124,7 +126,7 @@ class StickerService
 
             foreach ($stickers as $sticker) {
                 $randValue -= $sticker->getChance();
-                if($randValue <= 0) {
+                if ($randValue <= 0) {
                     $result = $sticker;
                     break;
                 }

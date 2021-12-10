@@ -20,12 +20,13 @@ use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
-
 class RegistrationController extends AbstractController
 {
-    public function index(RegistrationService $registrationService,
-                          RegistrationValidator $registrationValidator, Request $request): Response
-    {
+    public function index(
+        RegistrationService $registrationService,
+        RegistrationValidator $registrationValidator,
+        Request $request
+    ): Response {
         $status = StatusCode::STATUS_OK;
         $body = [];
 
@@ -42,20 +43,22 @@ class RegistrationController extends AbstractController
         return $this->json($body, $status);
     }
 
-    public function confirmRegistration(ConfirmationService $confirmationService,
-                                        RegistrationValidator $registrationValidator, Request $request): Response
-    {
+    public function confirmRegistration(
+        ConfirmationService $confirmationService,
+        RegistrationValidator $registrationValidator,
+        Request $request
+    ): Response {
         $status = StatusCode::STATUS_OK;
         $body = [];
 
         $errors = $registrationValidator->validateConfirmation($request->query->all());
 
-        if(count($errors) > 0) {
+        if (count($errors) > 0) {
             $status = StatusCode::STATUS_BAD_REQUEST;
             $body = $errors;
         } else {
             $body = $confirmationService->confirm($request->query->all());
-            if(count($body) > 0) {
+            if (count($body) > 0) {
                 $status = StatusCode::STATUS_BAD_REQUEST;
             }
         }
