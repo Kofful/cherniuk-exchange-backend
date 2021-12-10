@@ -5,6 +5,7 @@ services:
     container_name: database
     image: mysql:8.0
     command: --default-authentication-plugin=mysql_native_password
+    restart: unless-stopped
     environment:
       MYSQL_ROOT_PASSWORD: 12345
       MYSQL_DATABASE: cherniuk_db
@@ -18,6 +19,7 @@ services:
     container_name: php
     build:
       context: ./docker/php
+    restart: unless-stopped
     environment:
       PHP_IDE_CONFIG: "serverName=cherniuk-exchange"
     ports:
@@ -29,6 +31,7 @@ services:
   nginx:
     container_name: nginx
     image: nginx:stable-alpine
+    restart: unless-stopped
     ports:
       - '8080:80'
     volumes:
