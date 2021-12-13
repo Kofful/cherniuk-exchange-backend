@@ -27,6 +27,11 @@ class InventoryService
         }
     }
 
+    public function getStickerPrice(Sticker $sticker): int
+    {
+        return floor($sticker->getCoefficient() / 10) + 1;
+    }
+
     public function addStickerPrice(Sticker $sticker): void
     {
         if (!$sticker->getPrice()) {
@@ -34,7 +39,7 @@ class InventoryService
             // coefficient / 10 + 1,
             // so it can be a number from 1 to 10_000 (10% of max coefficient)
             // to be a low number to sell
-            $price = floor($sticker->getCoefficient() / 10) + 1;
+            $price = $this->getStickerPrice($sticker);
             $sticker->setPrice($price);
         }
     }
@@ -65,5 +70,13 @@ class InventoryService
             $this->addStickerPath($item->getSticker());
         }
         return $items;
+    }
+
+    public function sellItem(int $itemId): bool
+    {
+        $sticker = $this->inventoryItemRepository->find($itemId)->getSticker();
+        $price = $this->getStickerPrice($sticker);
+
+        return $this->inventoryItemRepository->sellItem($itemId, $price);
     }
 }

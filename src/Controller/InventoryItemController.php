@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Repository\InventoryItemRepository;
 use App\Repository\UserRepository;
 use App\Service\Inventory\InventoryService;
 use App\Service\StatusCode;
@@ -47,5 +48,35 @@ class InventoryItemController extends AbstractController
         ];
 
         return $this->json($response, $status, [], ["groups" => $groups]);
+    }
+
+    public function sellItem(
+        InventoryService $inventoryService,
+        InventoryItemRepository $inventoryItemRepository,
+        TranslatorInterface $translator,
+        Request $request
+    ): Response {
+        $response = [];
+        $status = StatusCode::STATUS_OK;
+        $itemId = $request->attributes->get("id");
+        $item = $inventoryItemRepository->find($itemId);
+
+        if (!$item) {
+            $response = [$translator->trans("item.not.found", [], "responses")];
+            $status = StatusCode::STATUS_BAD_REQUEST;
+            return $this->json($response, $status);
+        }
+
+        if ($this->getUser()->getId() != $item->getOwnerId()) {
+            $response = [$translator->trans("item.cannot.sell", [], "responses")];
+            $status = StatusCode::STATUS_ACCESS_DENIED;
+            return $this->json($response, $status);
+        }
+
+        if (!$inventoryService->sellItem($itemId)) {
+            $status = StatusCode::STATUS_ACCESS_DENIED;
+        }
+
+        return $this->json($response, $status);
     }
 }

@@ -6,6 +6,7 @@ use App\Entity\InventoryItem;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
+use mysql_xdevapi\Exception;
 
 /**
  * @method InventoryItem|null find($id, $lockMode = null, $lockVersion = null)
@@ -45,5 +46,23 @@ class InventoryItemRepository extends ServiceEntityRepository
             ->setMaxResults($limit)
             ->getQuery();
         return $query->getResult();
+    }
+
+    public function sellItem(int $itemId, int $price): bool
+    {
+        $isSold = true;
+        try {
+            $item = $this->find($itemId);
+            $user = $item->getOwner();
+            $newWallet = $user->getWallet() + $price;
+            $user->setWallet($newWallet);
+
+            $this->getEntityManager()->remove($item);
+            $this->getEntityManager()->persist($user);
+            $this->getEntityManager()->flush();
+        } catch (\Exception $e) {
+            $isSold = false;
+        }
+        return $isSold;
     }
 }
