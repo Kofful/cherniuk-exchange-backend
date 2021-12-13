@@ -45,3 +45,8 @@ get_user_info:
   path: /{_locale}/api/user/{id}
   controller: App\Controller\UserController::getUserInfo
   methods: GET
+
+sell_item:
+  path: /{_locale}/api/item/sell/{id}
+  controller: App\Controller\InventoryItemController::sellItem
+  methods: POST
