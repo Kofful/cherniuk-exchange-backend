@@ -72,6 +72,11 @@ class InventoryService
         return $items;
     }
 
+    public function getUserItemsCount(int $userId): int
+    {
+        return $this->inventoryItemRepository->getItemsCountByUserId($userId);
+    }
+
     public function sellItem(int $itemId): bool
     {
         $sticker = $this->inventoryItemRepository->find($itemId)->getSticker();

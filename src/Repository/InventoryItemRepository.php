@@ -48,6 +48,18 @@ class InventoryItemRepository extends ServiceEntityRepository
         return $query->getResult();
     }
 
+    public function getItemsCountByUserId(int $userId): int
+    {
+        $queryBuilder = new QueryBuilder($this->getEntityManager());
+        $query = $queryBuilder
+            ->select("count(it.id)")
+            ->from(self::INVENTORY_ITEM_CLASS, "it")
+            ->where("it.owner_id = $userId")
+            ->getQuery();
+        $result = $query->getSingleScalarResult();
+        return $result;
+    }
+
     public function sellItem(int $itemId, int $price): bool
     {
         $isSold = true;

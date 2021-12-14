@@ -33,10 +33,11 @@ class InventoryItemController extends AbstractController
         if (isset($user)) {
             $isInOwnProfile = $this->getUser() && $this->getUser()->getId() == $user->getId();
             if ($isInOwnProfile) {
-                $response = $inventoryService->getOwnItems($user->getId(), $page);
+                $response["stickers"] = $inventoryService->getOwnItems($user->getId(), $page);
             } else {
-                $response = $inventoryService->getUserItems($user->getId(), $page);
+                $response["stickers"] = $inventoryService->getUserItems($user->getId(), $page);
             }
+            $response["count"] = $inventoryService->getUserItemsCount($user->getId());
         } else {
             $status = StatusCode::STATUS_BAD_REQUEST;
             $response = [$translator->trans("user.not.found", [], "responses")];
