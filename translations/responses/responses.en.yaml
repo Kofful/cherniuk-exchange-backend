@@ -6,3 +6,7 @@ user:
 
 file:
   cannot.save: "The file cannot be saved"
+
+item:
+  not.found: "Item not found."
+  cannot.sell: "You are not permitted to sell this item!"
