@@ -25,3 +25,18 @@ confirmation:
     not.passed: Confirmation code was not passed.
     wrong: Wrong confirmation code.
   uid.not.passed: UID was not passed.
+
+invalid.types: Parameters have incorrect types.
+
+offer:
+  target.id:
+    required: Addressee id is required.
+    negative: Addressee id must be zero or greater.
+  payment:
+    negative: Payment must be zero or greater.
+    target:
+      required: Adressee payment is required.
+    creator:
+      required: Creator payment is requred.
+  give.required: List of items you give is required.
+  accept.required: List of items you accept is required.
