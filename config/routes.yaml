@@ -50,3 +50,8 @@ sell_item:
   path: /{_locale}/api/item/sell/{id}
   controller: App\Controller\InventoryItemController::sellItem
   methods: POST
+
+create_offer:
+  path: /{_locale}/api/offer/create
+  controller: App\Controller\OfferController::createOffer
+  methods: POST
