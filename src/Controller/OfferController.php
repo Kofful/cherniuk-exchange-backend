@@ -35,6 +35,14 @@ class OfferController extends AbstractController
                     $response[] = $error->getMessage();
                 }
             } else {
+                $offer->setCreator($this->getUser());
+                $errors = $offerService->createOffer($offer);
+                if (count($errors) > 0) {
+                    $status = StatusCode::STATUS_BAD_REQUEST;
+                    foreach ($errors as $error) {
+                        $response[] = $translator->trans($error, [], "responses");
+                    }
+                }
             }
         }
         return $this->json($response, $status);

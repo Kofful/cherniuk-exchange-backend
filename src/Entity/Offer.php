@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use App\Repository\OfferRepository;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -12,6 +13,10 @@ use Symfony\Component\Validator\Constraints as Assert;
  */
 class Offer
 {
+    public const STATUS_OPEN_ID = 1;
+    public const STATUS_PENDING_ID = 2;
+    public const STATUS_CLOSED_ID = 3;
+
     /**
      * @ORM\Id
      * @ORM\GeneratedValue
@@ -89,6 +94,11 @@ class Offer
      * @ORM\JoinColumn(name="status_id", referencedColumnName="id")
      */
     private ?OfferStatus $status;
+
+    /**
+     * @ORM\OneToMany(targetEntity="OfferItem", mappedBy="offer")
+     */
+    private ?Collection $items;
 
     /**
      * @Assert\NotBlank(
@@ -251,5 +261,11 @@ class Offer
     public function preUpdate(): void
     {
         $this->setUpdatedAt(new \DateTimeImmutable('now'));
+    }
+
+    public function __construct()
+    {
+        $this->setCreatedAt(new \DateTimeImmutable("now"));
+        $this->setUpdatedAt(new \DateTimeImmutable("now"));
     }
 }
