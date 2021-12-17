@@ -3,7 +3,9 @@
 namespace App\Entity;
 
 use App\Repository\OfferRepository;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity(repositoryClass=OfferRepository::class)
@@ -11,65 +13,108 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class Offer
 {
+    public const STATUS_OPEN_ID = 1;
+    public const STATUS_PENDING_ID = 2;
+    public const STATUS_CLOSED_ID = 3;
+
     /**
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
      */
-    private $id;
+    private ?int $id;
 
     /**
      * @ORM\Column(type="integer")
      */
-    private $creator_id;
+    private ?int $creator_id;
 
     /**
      * @ORM\Column(type="integer", nullable=true)
+     * @Assert\NotBlank(
+     *     message="offer.target.id.required"
+     * )
+     * @Assert\PositiveOrZero(
+     *     message="offer.target.id.negative"
+     * )
      */
-    private $target_id;
+    private ?int $target_id;
 
     /**
      * @ORM\Column(type="integer")
      */
-    private $status_id;
+    private ?int $status_id;
 
     /**
      * @ORM\Column(type="integer")
+     * @Assert\NotBlank(
+     *     message="offer.payment.creator.required"
+     * )
+     * @Assert\PositiveOrZero(
+     *     message="offer.payment.negative"
+     * )
      */
-    private $creator_payment;
+    private ?int $creator_payment;
 
     /**
      * @ORM\Column(type="integer")
+     * @Assert\NotBlank(
+     *     message="offer.payment.target.required"
+     * )
+     * @Assert\PositiveOrZero(
+     *     message="offer.payment.negative"
+     * )
      */
-    private $target_payment;
+    private ?int $target_payment;
 
     /**
      * @ORM\Column(type="datetime_immutable", options={"default" : "CURRENT_TIMESTAMP"})
      */
-    private $created_at;
+    private \DateTimeImmutable $created_at;
 
     /**
      * @ORM\Column(type="datetime_immutable", options={"default" : "CURRENT_TIMESTAMP"})
      */
-    private $updated_at;
+    private \DateTimeImmutable $updated_at;
 
     /**
      * @ORM\ManyToOne(targetEntity="User")
      * @ORM\JoinColumn(name="creator_id", referencedColumnName="id")
      */
-    private $creator;
+    private ?User $creator;
 
     /**
      * @ORM\ManyToOne(targetEntity="User")
      * @ORM\JoinColumn(name="target_id", referencedColumnName="id")
      */
-    private $target;
+    private ?User $target;
 
     /**
      * @ORM\ManyToOne(targetEntity="OfferStatus")
      * @ORM\JoinColumn(name="status_id", referencedColumnName="id")
      */
-    private $status;
+    private ?OfferStatus $status;
+
+    /**
+     * @ORM\OneToMany(targetEntity="OfferItem", mappedBy="offer")
+     */
+    private ?Collection $items;
+
+    /**
+     * @Assert\NotBlank(
+     *     message="offer.give.required"
+     * )
+     * @var int[]|null
+     */
+    private ?array $give;
+
+    /**
+     * @Assert\NotBlank(
+     *     message="offer.accept.required"
+     * )
+     * @var int[]|null
+     */
+    private ?array $accept;
 
     public function getId(): ?int
     {
@@ -160,7 +205,7 @@ class Offer
         return $this;
     }
 
-    public function getCreator()
+    public function getCreator(): ?User
     {
         return $this->creator;
     }
@@ -170,7 +215,7 @@ class Offer
         $this->creator = $creator;
     }
 
-    public function getTarget()
+    public function getTarget(): ?User
     {
         return $this->target;
     }
@@ -180,7 +225,7 @@ class Offer
         $this->target = $target;
     }
 
-    public function getStatus()
+    public function getStatus(): ?OfferStatus
     {
         return $this->status;
     }
@@ -190,11 +235,37 @@ class Offer
         $this->status = $status;
     }
 
+    public function getGive(): ?array
+    {
+        return $this->give;
+    }
+
+    public function setGive(?array $give): void
+    {
+        $this->give = $give;
+    }
+
+    public function getAccept(): ?array
+    {
+        return $this->accept;
+    }
+
+    public function setAccept(?array $accept): void
+    {
+        $this->accept = $accept;
+    }
+
     /**
      * @ORM\PreUpdate
      */
     public function preUpdate(): void
     {
         $this->setUpdatedAt(new \DateTimeImmutable('now'));
+    }
+
+    public function __construct()
+    {
+        $this->setCreatedAt(new \DateTimeImmutable("now"));
+        $this->setUpdatedAt(new \DateTimeImmutable("now"));
     }
 }

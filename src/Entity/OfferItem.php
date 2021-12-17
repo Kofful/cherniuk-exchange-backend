@@ -16,44 +16,44 @@ class OfferItem
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
      */
-    private $id;
+    private ?int $id;
 
     /**
      * @ORM\Column(type="integer")
      */
-    private $offer_id;
+    private ?int $offer_id;
 
     /**
      * @ORM\Column(type="integer")
      */
-    private $sticker_id;
+    private ?int $sticker_id;
 
     /**
      * @ORM\Column(type="boolean")
      */
-    private $is_accept;
+    private ?bool $is_accept;
 
     /**
      * @ORM\Column(type="datetime_immutable", options={"default" : "CURRENT_TIMESTAMP"})
      */
-    private $created_at;
+    private \DateTimeImmutable $created_at;
 
     /**
      * @ORM\Column(type="datetime_immutable", options={"default" : "CURRENT_TIMESTAMP"})
      */
-    private $updated_at;
+    private \DateTimeImmutable $updated_at;
 
     /**
      * @ORM\ManyToOne(targetEntity="Offer")
      * @ORM\JoinColumn(name="offer_id", referencedColumnName="id")
      */
-    private $offer;
+    private ?Offer $offer;
 
     /**
      * @ORM\ManyToOne(targetEntity="Sticker")
      * @ORM\JoinColumn(name="sticker_id", referencedColumnName="id")
      */
-    private $sticker;
+    private ?Sticker $sticker;
 
     public function getId(): ?int
     {
@@ -120,7 +120,7 @@ class OfferItem
         return $this;
     }
 
-    public function getOffer()
+    public function getOffer(): Offer
     {
         return $this->offer;
     }
@@ -146,5 +146,11 @@ class OfferItem
     public function preUpdate(): void
     {
         $this->setUpdatedAt(new \DateTimeImmutable('now'));
+    }
+
+    public function __construct()
+    {
+        $this->setCreatedAt(new \DateTimeImmutable("now"));
+        $this->setUpdatedAt(new \DateTimeImmutable("now"));
     }
 }

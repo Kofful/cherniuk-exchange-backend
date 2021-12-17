@@ -25,3 +25,18 @@ confirmation:
     not.passed: Не передан код подтверждения.
     wrong: Неверный код подтверждения.
   uid.not.passed: UID не передан.
+
+invalid.types: Параметры имеют неверный тип.
+
+offer:
+  target.id:
+    required: ID адресата обязательно.
+    negative: ID адресата должно быть 0 или более.
+  payment:
+    negative: Доплата должна быть 0 или более.
+    target:
+      required: Доплата адресата обязательна.
+    creator:
+      required: Доплата создателя обязательна.
+  give.required: Список предметов, которые Вы отдаете, обязателен.
+  accept.required: Список предметов, которые Вы получаете, обязателен.
