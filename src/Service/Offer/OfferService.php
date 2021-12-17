@@ -4,11 +4,14 @@ namespace App\Service\Offer;
 
 use App\Entity\Offer;
 use App\Entity\OfferItem;
+use App\Entity\Sticker;
 use App\Repository\OfferItemRepository;
 use App\Repository\OfferRepository;
 use App\Repository\OfferStatusRepository;
 use App\Repository\StickerRepository;
 use App\Repository\UserRepository;
+use App\Service\Inventory\InventoryService;
+use App\Service\Sticker\StickerService;
 use Doctrine\ORM\EntityManagerInterface;
 
 class OfferService
@@ -16,6 +19,7 @@ class OfferService
     private OfferRepository $offerRepository;
     private OfferItemRepository $offerItemRepository;
     private OfferStatusRepository $offerStatusRepository;
+    private StickerService $stickerService;
     private StickerRepository $stickerRepository;
     private EntityManagerInterface $entityManager;
     private UserRepository $userRepository;
@@ -24,6 +28,7 @@ class OfferService
         OfferRepository $offerRepository,
         OfferItemRepository $offerItemRepository,
         OfferStatusRepository $offerStatusRepository,
+        StickerService $stickerService,
         StickerRepository $stickerRepository,
         EntityManagerInterface $entityManager,
         UserRepository $userRepository
@@ -31,9 +36,27 @@ class OfferService
         $this->offerRepository = $offerRepository;
         $this->offerItemRepository = $offerItemRepository;
         $this->offerStatusRepository = $offerStatusRepository;
+        $this->stickerService = $stickerService;
         $this->stickerRepository = $stickerRepository;
         $this->entityManager = $entityManager;
         $this->userRepository = $userRepository;
+    }
+
+    private function splitOfferItems(Offer $offer): void
+    {
+        $giveItems = [];
+        $acceptItems = [];
+        foreach ($offer->getItems() as $item) {
+            $sticker = $item->getSticker();
+            $this->stickerService->addPath($sticker);
+            if ($item->getIsAccept()) {
+                $acceptItems[] = $sticker;
+            } else {
+                $giveItems[] = $sticker;
+            }
+        }
+        $offer->setGiveItems($giveItems);
+        $offer->setAcceptItems($acceptItems);
     }
 
     private function addItemsToOffer(Offer $offer, array $stickerIds, bool $isAccept): void
@@ -46,6 +69,25 @@ class OfferService
             $offerItem->setIsAccept($isAccept);
             $this->entityManager->persist($offerItem);
         }
+    }
+
+    public function getOffers(int $page): array
+    {
+        $offset = ($page - 1) * OfferRepository::OFFER_COUNT_PER_PAGE;
+        $offers = $this->offerRepository->findBy(
+            [
+                "status_id" => Offer::STATUS_OPEN_ID,
+                "target_id" => null
+            ],
+            ["created_at" => "ASC"],
+            OfferRepository::OFFER_COUNT_PER_PAGE,
+            $offset
+        );
+        foreach ($offers as $offer) {
+            $this->splitOfferItems($offer);
+        }
+
+        return $offers;
     }
 
     public function createOffer(Offer $offer): array

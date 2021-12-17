@@ -14,6 +14,23 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 
 class OfferController extends AbstractController
 {
+    public function getOffers(
+        OfferService $offerService,
+        TranslatorInterface $translator,
+        Request $request
+    ): Response {
+        $response = [];
+        $status = StatusCode::STATUS_OK;
+        $page = $request->query->get("page") ?? 1;
+        if (!is_numeric($page) || $page < 1) {
+            $status = StatusCode::STATUS_BAD_REQUEST;
+            $response = $translator->trans("invalid.page", [], "responses");
+        } else {
+            $response = $offerService->getOffers($page);
+        }
+        return $this->json($response, $status, [], ["groups" => ["allOffers", "allStickers", "profile"]]);
+    }
+
     public function createOffer(
         OfferService $offerService,
         JsonSerializer $serializer,

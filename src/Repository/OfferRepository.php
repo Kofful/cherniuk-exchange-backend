@@ -14,6 +14,8 @@ use Doctrine\Persistence\ManagerRegistry;
  */
 class OfferRepository extends ServiceEntityRepository
 {
+    public const OFFER_COUNT_PER_PAGE = 10;
+
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, Offer::class);

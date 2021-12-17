@@ -6,6 +6,7 @@ use App\Repository\OfferRepository;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 /**
  * @ORM\Entity(repositoryClass=OfferRepository::class)
@@ -18,6 +19,7 @@ class Offer
     public const STATUS_CLOSED_ID = 3;
 
     /**
+     * @Groups("allOffers")
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
@@ -46,6 +48,7 @@ class Offer
     private ?int $status_id;
 
     /**
+     * @Groups("allOffers")
      * @ORM\Column(type="integer")
      * @Assert\NotBlank(
      *     message="offer.payment.creator.required"
@@ -57,6 +60,7 @@ class Offer
     private ?int $creator_payment;
 
     /**
+     * @Groups("allOffers")
      * @ORM\Column(type="integer")
      * @Assert\NotBlank(
      *     message="offer.payment.target.required"
@@ -78,12 +82,14 @@ class Offer
     private \DateTimeImmutable $updated_at;
 
     /**
+     * @Groups("allOffers")
      * @ORM\ManyToOne(targetEntity="User")
      * @ORM\JoinColumn(name="creator_id", referencedColumnName="id")
      */
     private ?User $creator;
 
     /**
+     * @Groups("allOffers")
      * @ORM\ManyToOne(targetEntity="User")
      * @ORM\JoinColumn(name="target_id", referencedColumnName="id")
      */
@@ -115,6 +121,18 @@ class Offer
      * @var int[]|null
      */
     private ?array $accept;
+
+    /**
+     * @Groups("allOffers")
+     * @var Sticker[]|null
+     */
+    private ?array $giveItems;
+
+    /**
+     * @Groups("allOffers")
+     * @var Sticker[]|null
+     */
+    private ?array $acceptItems;
 
     public function getId(): ?int
     {
@@ -253,6 +271,54 @@ class Offer
     public function setAccept(?array $accept): void
     {
         $this->accept = $accept;
+    }
+
+    /**
+     * @return Collection|null
+     */
+    public function getItems(): ?Collection
+    {
+        return $this->items;
+    }
+
+    /**
+     * @param Collection|null $items
+     */
+    public function setItems(?Collection $items): void
+    {
+        $this->items = $items;
+    }
+
+    /**
+     * @return Sticker[]|null
+     */
+    public function getGiveItems(): ?array
+    {
+        return $this->giveItems;
+    }
+
+    /**
+     * @param Sticker[]|null $giveItems
+     */
+    public function setGiveItems(?array $giveItems): void
+    {
+        $this->giveItems = $giveItems;
+    }
+
+    /**
+     * @return Sticker[]|null
+     */
+    public function getAcceptItems(): ?array
+    {
+        return $this->acceptItems;
+    }
+
+    /**
+     * @param Sticker[]|null $acceptItems
+     */
+    public function setAcceptItems(?array $acceptItems): void
+    {
+        $this->acceptItems = $acceptItems;
     }
 
     /**
