@@ -28,11 +28,33 @@ class StickerService
         $this->imageService = $imageService;
     }
 
+    public function countPrice(Sticker $sticker): int
+    {
+        return floor($sticker->getCoefficient() / 10) + 1;
+    }
+
+    public function addPrice(Sticker $sticker): void
+    {
+        if (!$sticker->getPrice()) {
+            // price is counted by formula
+            // coefficient / 10 + 1,
+            // so it can be a number from 1 to 10_000 (10% of max coefficient)
+            // to be a low number to sell
+            $price = $this->countPrice($sticker);
+            $sticker->setPrice($price);
+        }
+    }
+
     public function addPath(Sticker $sticker): void
     {
         $oldPath = $sticker->getPath();
-        $sticker->setPathSmall($_ENV["STICKER_PATH"] . explode(".", $oldPath)[0] . "_100.png");
-        $sticker->setPath($_ENV["STICKER_PATH"] . $oldPath);
+
+        //check if we haven't changed sticker path already
+        //(this can happen because we change sticker fields, but there may be many items with same stickers)
+        if (strpos($oldPath, "/") === false) {
+            $sticker->setPathSmall($_ENV["STICKER_PATH"] . explode(".", $oldPath)[0] . "_100.png");
+            $sticker->setPath($_ENV["STICKER_PATH"] . $oldPath);
+        }
     }
 
     public function getAll(int $page, int $limit): array
