@@ -90,6 +90,16 @@ class OfferService
         return $offers;
     }
 
+    public function getCount(): int
+    {
+        return $this->offerRepository->count(
+            [
+                "status_id" => Offer::STATUS_OPEN_ID,
+                "target_id" => null
+            ]
+        );
+    }
+
     public function createOffer(Offer $offer): array
     {
         $errors = [];

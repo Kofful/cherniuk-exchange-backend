@@ -26,7 +26,10 @@ class OfferController extends AbstractController
             $status = StatusCode::STATUS_BAD_REQUEST;
             $response = $translator->trans("invalid.page", [], "responses");
         } else {
-            $response = $offerService->getOffers($page);
+            $response = [
+                "offers" => $offerService->getOffers($page),
+                "count" => $offerService->getCount()
+            ];
         }
         return $this->json($response, $status, [], ["groups" => ["allOffers", "allStickers", "profile"]]);
     }
