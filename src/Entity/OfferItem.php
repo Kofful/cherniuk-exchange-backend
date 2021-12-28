@@ -45,7 +45,7 @@ class OfferItem
 
     /**
      * @ORM\ManyToOne(targetEntity="Offer")
-     * @ORM\JoinColumn(name="offer_id", referencedColumnName="id")
+     * @ORM\JoinColumn(name="offer_id", referencedColumnName="id", onDelete="CASCADE")
      */
     private ?Offer $offer;
 
