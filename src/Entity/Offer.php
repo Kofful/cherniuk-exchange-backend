@@ -7,6 +7,7 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Serializer\Annotation\SerializedName;
 
 /**
  * @ORM\Entity(repositoryClass=OfferRepository::class)
@@ -56,6 +57,7 @@ class Offer
      * @Assert\PositiveOrZero(
      *     message="offer.payment.negative"
      * )
+     * @SerializedName("creatorPayment")
      */
     private ?int $creator_payment;
 
@@ -68,6 +70,7 @@ class Offer
      * @Assert\PositiveOrZero(
      *     message="offer.payment.negative"
      * )
+     * @SerializedName("targetPayment")
      */
     private ?int $target_payment;
 
