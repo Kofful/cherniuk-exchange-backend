@@ -276,6 +276,16 @@ class Offer
         $this->accept = $accept;
     }
 
+    public function getItems(): ?Collection
+    {
+        return $this->items;
+    }
+
+    public function setItems(?Collection $items): void
+    {
+        $this->items = $items;
+    }
+
     /**
      * @return Collection|null
      */

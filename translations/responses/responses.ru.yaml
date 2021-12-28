@@ -13,6 +13,9 @@ item:
 
 offer:
   accepting.forbidden: "Вы не можете принять предложение!"
+  participant:
+    low.wallet: "У одного из участников не хватает монет."
+    items.not.enough: "У одного из участников не хватает нужных предметов."
   not.found: "Предложение не найдено."
   deleting.forbidden: "Удаление предложения запрещено!"
 

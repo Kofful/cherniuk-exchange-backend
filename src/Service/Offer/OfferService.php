@@ -6,6 +6,7 @@ use App\Entity\Offer;
 use App\Entity\OfferItem;
 use App\Entity\Sticker;
 use App\Entity\User;
+use App\Repository\InventoryItemRepository;
 use App\Repository\OfferItemRepository;
 use App\Repository\OfferRepository;
 use App\Repository\OfferStatusRepository;
@@ -21,6 +22,7 @@ class OfferService
     private OfferItemRepository $offerItemRepository;
     private OfferStatusRepository $offerStatusRepository;
     private StickerService $stickerService;
+    private InventoryItemRepository $inventoryItemRepository;
     private StickerRepository $stickerRepository;
     private EntityManagerInterface $entityManager;
     private UserRepository $userRepository;
@@ -30,6 +32,7 @@ class OfferService
         OfferItemRepository $offerItemRepository,
         OfferStatusRepository $offerStatusRepository,
         StickerService $stickerService,
+        InventoryItemRepository $inventoryItemRepository,
         StickerRepository $stickerRepository,
         EntityManagerInterface $entityManager,
         UserRepository $userRepository
@@ -37,6 +40,7 @@ class OfferService
         $this->offerRepository = $offerRepository;
         $this->offerItemRepository = $offerItemRepository;
         $this->offerStatusRepository = $offerStatusRepository;
+        $this->inventoryItemRepository = $inventoryItemRepository;
         $this->stickerService = $stickerService;
         $this->stickerRepository = $stickerRepository;
         $this->entityManager = $entityManager;
@@ -136,9 +140,75 @@ class OfferService
         if (is_null($offer)) {
             $errors[] = "offer.not.found";
         }
-        if (isset($offer) && $offer->getCreatorId() == $user->getId()) {
-            $errors[] = "offer.accepting.forbidden";
+        if (isset($offer)) {
+            $isUserACreator = $offer->getCreatorId() == $user->getId();
+            $isUserATarget = $offer->getTargetId() == null || $offer->getTargetId() == $user->getId();
+            if ($isUserACreator || !$isUserATarget) {
+                $errors[] = "offer.accepting.forbidden";
+            }
         }
+        return $errors;
+    }
+
+    private function setStatus(Offer $offer, int $statusId): void
+    {
+        $status = $this->offerStatusRepository->find($statusId);
+        $offer->setStatus($status);
+        $this->entityManager->flush();
+    }
+
+    private function checkParticipantsWallets(User $user, Offer $offer): bool
+    {
+        $creator = $offer->getCreator();
+        $areWalletsEnough = $user->getWallet() < $offer->getTargetPayment()
+            || $creator->getWallet() < $offer->getCreatorPayment();
+        return $areWalletsEnough;
+    }
+
+    private function checkParticipantsItems(User $user, Offer $offer): bool
+    {
+        $targetItems = $this->inventoryItemRepository->findBy(["owner_id" => $user->getId()]);
+        $creatorItems =  $this->inventoryItemRepository->findBy(["owner_id" => $offer->getCreatorId()]);
+
+        foreach ($offer->getItems() as $item) {
+            $isFound = false;
+            //search in target items
+            $keyToDelete = array_search($item, $targetItems);
+            if ($keyToDelete === false) {
+                //search in creator items
+                $keyToDelete = array_search($item, $creatorItems);
+                if ($keyToDelete !== false) {
+                    $isFound = true;
+                    unset($creatorItems[$keyToDelete]);
+                }
+            } else {
+                $isFound = true;
+                unset($targetItems[$keyToDelete]);
+            }
+
+            if (!$isFound) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    public function acceptOffer(User $user, int $offerId): array
+    {
+        $errors = [];
+
+        $offer = $this->offerRepository->find($offerId);
+
+        $this->setStatus($offer, Offer::STATUS_PENDING_ID);
+        if (!$this->checkParticipantsWallets($user, $offer)) {
+            $errors[] = "offer.participant.low.wallet";
+        }
+
+        if (!$this->checkParticipantsItems($user, $offer)) {
+            $errors[] = "offer.participant.items.not.enough";
+        }
+
         return $errors;
     }
 

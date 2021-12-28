@@ -13,6 +13,9 @@ item:
 
 offer:
   accepting.forbidden: "Offer accepting is forbidden!"
+  participant:
+      low.wallet: "One of participants does not have enough coins."
+      items.not.enough: "One of participants does not have all required items."
   not.found: "Offer not found."
   deleting.forbidden: "Offer deleting is forbidden!"
 
