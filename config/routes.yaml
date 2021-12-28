@@ -60,3 +60,8 @@ create_offer:
   path: /{_locale}/api/offer/create
   controller: App\Controller\OfferController::createOffer
   methods: POST
+
+remove_offer:
+  path: /{_locale}/api/offer/remove/{id}
+  controller: App\Controller\OfferController::removeOffer
+  methods: DELETE
