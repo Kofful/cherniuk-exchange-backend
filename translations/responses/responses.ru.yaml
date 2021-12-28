@@ -12,6 +12,7 @@ item:
   cannot.sell: "Вам нельзя продавать этот предмет!"
 
 offer:
+  accepting.forbidden: "Вы не можете принять предложение!"
   not.found: "Предложение не найдено."
   deleting.forbidden: "Удаление предложения запрещено!"
 

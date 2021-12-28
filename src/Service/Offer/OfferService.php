@@ -129,6 +129,19 @@ class OfferService
         return $errors;
     }
 
+    public function checkAcceptPermissions(User $user, int $offerId): array
+    {
+        $errors = [];
+        $offer = $this->offerRepository->find($offerId);
+        if (is_null($offer)) {
+            $errors[] = "offer.not.found";
+        }
+        if (isset($offer) && $offer->getCreatorId() == $user->getId()) {
+            $errors[] = "offer.accepting.forbidden";
+        }
+        return $errors;
+    }
+
     public function checkRemovePermissions(User $user, int $offerId): array
     {
         $errors = [];

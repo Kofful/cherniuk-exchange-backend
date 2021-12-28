@@ -12,6 +12,7 @@ item:
   cannot.sell: "You are not permitted to sell this item!"
 
 offer:
+  accepting.forbidden: "Offer accepting is forbidden!"
   not.found: "Offer not found."
   deleting.forbidden: "Offer deleting is forbidden!"
 
