@@ -11,4 +11,8 @@ item:
   not.found: "Item not found."
   cannot.sell: "You are not permitted to sell this item!"
 
+offer:
+  not.found: "Offer not found."
+  deleting.forbidden: "Offer deleting is forbidden!"
+
 invalid.page: "Wrong page number."

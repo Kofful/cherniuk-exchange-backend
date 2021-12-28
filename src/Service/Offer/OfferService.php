@@ -5,6 +5,7 @@ namespace App\Service\Offer;
 use App\Entity\Offer;
 use App\Entity\OfferItem;
 use App\Entity\Sticker;
+use App\Entity\User;
 use App\Repository\OfferItemRepository;
 use App\Repository\OfferRepository;
 use App\Repository\OfferStatusRepository;
@@ -126,5 +127,25 @@ class OfferService
         }
 
         return $errors;
+    }
+
+    public function checkRemovePermissions(User $user, int $offerId): array
+    {
+        $errors = [];
+        $offer = $this->offerRepository->find($offerId);
+        if (is_null($offer)) {
+            $errors[] = "offer.not.found";
+        }
+        if (!is_null($offer) && $user->getId() != $offer->getCreatorId()) {
+            $errors[] = "offer.deleting.forbidden";
+        }
+        return $errors;
+    }
+
+    public function removeOffer(int $offerId)
+    {
+        $offer = $this->offerRepository->find($offerId);
+        $this->entityManager->remove($offer);
+        $this->entityManager->flush();
     }
 }

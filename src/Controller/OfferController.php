@@ -67,4 +67,24 @@ class OfferController extends AbstractController
         }
         return $this->json($response, $status);
     }
+
+    public function removeOffer(
+        OfferService $offerService,
+        TranslatorInterface $translator,
+        Request $request
+    ): Response {
+        $response = [];
+        $status = Response::HTTP_OK;
+        $offerId = $request->get("id");
+        $errors = $offerService->checkRemovePermissions($this->getUser(), $offerId);
+        if (count($errors) > 0) {
+            $status = Response::HTTP_FORBIDDEN;
+            foreach ($errors as $error) {
+                $response[] = $translator->trans($error, [], "responses");
+            }
+        } else {
+            $offerService->removeOffer($offerId);
+        }
+        return $this->json($response, $status);
+    }
 }
