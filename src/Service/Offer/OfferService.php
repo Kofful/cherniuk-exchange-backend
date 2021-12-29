@@ -143,7 +143,8 @@ class OfferService
         if (isset($offer)) {
             $isUserACreator = $offer->getCreatorId() == $user->getId();
             $isUserATarget = $offer->getTargetId() == null || $offer->getTargetId() == $user->getId();
-            if ($isUserACreator || !$isUserATarget) {
+            $isOfferOpen = $offer->getStatusId() == Offer::STATUS_OPEN_ID;
+            if ($isUserACreator || !$isUserATarget || !$isOfferOpen) {
                 $errors[] = "offer.accepting.forbidden";
             }
         }
@@ -154,44 +155,67 @@ class OfferService
     {
         $status = $this->offerStatusRepository->find($statusId);
         $offer->setStatus($status);
-        $this->entityManager->flush();
     }
 
     private function checkParticipantsWallets(User $user, Offer $offer): bool
     {
         $creator = $offer->getCreator();
-        $areWalletsEnough = $user->getWallet() < $offer->getTargetPayment()
-            || $creator->getWallet() < $offer->getCreatorPayment();
+        $areWalletsEnough = $user->getWallet() >= $offer->getTargetPayment()
+            && $creator->getWallet() >= $offer->getCreatorPayment();
         return $areWalletsEnough;
     }
 
-    private function checkParticipantsItems(User $user, Offer $offer): bool
+    private function getParticipantsItems(User $user, Offer $offer): array
     {
         $targetItems = $this->inventoryItemRepository->findBy(["owner_id" => $user->getId()]);
         $creatorItems =  $this->inventoryItemRepository->findBy(["owner_id" => $offer->getCreatorId()]);
+        $offerItems = $offer->getItems();
+        $participantsItems = [];
 
-        foreach ($offer->getItems() as $item) {
+        //add sticker arrays to search by sticker
+        //because targetItems is InventoryItem array and offer items are OfferItem instances
+        $targetStickers = array_map(
+            function ($item) {
+                return $item->getSticker();
+            },
+            $targetItems
+        );
+        $creatorStickers = array_map(
+            function ($item) {
+                return $item->getSticker();
+            },
+            $creatorItems
+        );
+
+        foreach ($offerItems as $item) {
             $isFound = false;
             //search in target items
-            $keyToDelete = array_search($item, $targetItems);
-            if ($keyToDelete === false) {
-                //search in creator items
-                $keyToDelete = array_search($item, $creatorItems);
+            if ($item->getIsAccept()) {
+                $keyToDelete = array_search($item->getSticker(), $targetStickers);
                 if ($keyToDelete !== false) {
                     $isFound = true;
-                    unset($creatorItems[$keyToDelete]);
+                    //remove from target stickers in case offer has many similar stickers
+                    unset($targetStickers[$keyToDelete]);
+                    //add to final list that contains items to remove from inventories
+                    $participantsItems[] = $targetItems[$keyToDelete];
                 }
             } else {
-                $isFound = true;
-                unset($targetItems[$keyToDelete]);
+                $keyToDelete = array_search($item->getSticker(), $creatorStickers);
+                if ($keyToDelete !== false) {
+                    $isFound = true;
+                    //remove from target stickers in case offer has many similar stickers
+                    unset($creatorStickers[$keyToDelete]);
+                    //add to final list that contains items to remove from inventories
+                    $participantsItems[] = $creatorItems[$keyToDelete];
+                }
             }
 
             if (!$isFound) {
-                return false;
+                return [];
             }
         }
 
-        return true;
+        return $participantsItems;
     }
 
     public function acceptOffer(User $user, int $offerId): array
@@ -201,13 +225,32 @@ class OfferService
         $offer = $this->offerRepository->find($offerId);
 
         $this->setStatus($offer, Offer::STATUS_PENDING_ID);
+        $this->entityManager->flush();
+
         if (!$this->checkParticipantsWallets($user, $offer)) {
             $errors[] = "offer.participant.low.wallet";
         }
 
-        if (!$this->checkParticipantsItems($user, $offer)) {
+        $participantsItems = $this->getParticipantsItems($user, $offer);
+        //count 0 means that participants don't have all required stickers
+        if (count($participantsItems) == 0) {
             $errors[] = "offer.participant.items.not.enough";
         }
+
+        if (count($errors) > 0) {
+            $this->setStatus($offer, Offer::STATUS_OPEN_ID);
+        } else {
+            $creator = $offer->getCreator();
+            $creator->setWallet($creator->getWallet() - $offer->getCreatorPayment());
+            $user->setWallet($user->getWallet() - $offer->getTargetPayment());
+            foreach ($participantsItems as $item) {
+                $this->entityManager->remove($item);
+            }
+            $offer->setTarget($user);
+
+            $this->setStatus($offer, Offer::STATUS_CLOSED_ID);
+        }
+        $this->entityManager->flush();
 
         return $errors;
     }

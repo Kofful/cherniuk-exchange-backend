@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use App\Repository\OfferRepository;
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -346,5 +347,6 @@ class Offer
     {
         $this->setCreatedAt(new \DateTimeImmutable("now"));
         $this->setUpdatedAt(new \DateTimeImmutable("now"));
+        $this->setItems(new ArrayCollection());
     }
 }
