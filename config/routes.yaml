@@ -51,6 +51,11 @@ sell_item:
   controller: App\Controller\InventoryItemController::sellItem
   methods: POST
 
+get_offers:
+  path: /{_locale}/api/offers
+  controller: App\Controller\OfferController::getOffers
+  methods: GET
+
 create_offer:
   path: /{_locale}/api/offer/create
   controller: App\Controller\OfferController::createOffer

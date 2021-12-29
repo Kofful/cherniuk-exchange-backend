@@ -10,3 +10,5 @@ file:
 item:
   not.found: "Item not found."
   cannot.sell: "You are not permitted to sell this item!"
+
+invalid.page: "Wrong page number."
