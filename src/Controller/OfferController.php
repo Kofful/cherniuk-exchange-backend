@@ -106,6 +106,7 @@ class OfferController extends AbstractController
         } else {
             $errors = $offerService->acceptOffer($user, $offerId);
             if (count($errors) > 0) {
+                $status = Response::HTTP_FORBIDDEN;
                 foreach ($errors as $error) {
                     $response[] = $translator->trans($error, [], "responses");
                 }
