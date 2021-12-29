@@ -244,7 +244,11 @@ class OfferService
             $creator->setWallet($creator->getWallet() - $offer->getCreatorPayment());
             $user->setWallet($user->getWallet() - $offer->getTargetPayment());
             foreach ($participantsItems as $item) {
-                $this->entityManager->remove($item);
+                if ($item->getOwner()->getId() == $user->getId()) {
+                    $item->setOwner($creator);
+                } else {
+                    $item->setOwner($user);
+                }
             }
             $offer->setTarget($user);
 
