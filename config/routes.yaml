@@ -65,3 +65,8 @@ remove_offer:
   path: /{_locale}/api/offer/remove/{id}
   controller: App\Controller\OfferController::removeOffer
   methods: DELETE
+
+accept_offer:
+  path: /{_locale}/api/offer/accept/{id}
+  controller: App\Controller\OfferController::acceptOffer
+  methods: POST

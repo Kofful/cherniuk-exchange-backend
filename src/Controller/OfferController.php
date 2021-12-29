@@ -87,4 +87,30 @@ class OfferController extends AbstractController
         }
         return $this->json($response, $status);
     }
+
+    public function acceptOffer(
+        OfferService $offerService,
+        TranslatorInterface $translator,
+        Request $request
+    ): Response {
+        $response = [];
+        $status = Response::HTTP_OK;
+        $offerId = $request->get("id");
+        $user = $this->getUser();
+        $errors = $offerService->checkAcceptPermissions($user, $offerId);
+        if (count($errors) > 0) {
+            $status = Response::HTTP_FORBIDDEN;
+            foreach ($errors as $error) {
+                $response[] = $translator->trans($error, [], "responses");
+            }
+        } else {
+            $errors = $offerService->acceptOffer($user, $offerId);
+            if (count($errors) > 0) {
+                foreach ($errors as $error) {
+                    $response[] = $translator->trans($error, [], "responses");
+                }
+            }
+        }
+        return $this->json($response, $status);
+    }
 }
