@@ -288,22 +288,6 @@ class Offer
     }
 
     /**
-     * @return Collection|null
-     */
-    public function getItems(): ?Collection
-    {
-        return $this->items;
-    }
-
-    /**
-     * @param Collection|null $items
-     */
-    public function setItems(?Collection $items): void
-    {
-        $this->items = $items;
-    }
-
-    /**
      * @return Sticker[]|null
      */
     public function getGiveItems(): ?array
