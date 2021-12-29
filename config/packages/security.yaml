@@ -42,4 +42,5 @@ security:
         - { path: "^/[a-z]{2}/api/user/\\d+/items", roles: IS_AUTHENTICATED_ANONYMOUSLY}
         - { path: "^/[a-z]{2}/api/offers", roles: IS_AUTHENTICATED_ANONYMOUSLY}
         - { path: "^/[a-z]{2}/api/offer/create", roles: ROLE_USER}
+        - { path: "^/[a-z]{2}/api/offer/remove/\\d+", roles: ROLE_USER}
         - { path: "^/api", roles: IS_AUTHENTICATED_FULLY }
