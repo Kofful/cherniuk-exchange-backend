@@ -101,10 +101,8 @@ class OfferService
         return $criteria;
     }
 
-    public function getOffers(
-        int $page,
-        array $criteria
-    ): array {
+    public function getOffers(int $page, array $criteria): array
+    {
         $offset = ($page - 1) * OfferRepository::OFFER_COUNT_PER_PAGE;
         $offers = $this->offerRepository->findBy(
             $criteria,
@@ -119,12 +117,25 @@ class OfferService
         return $offers;
     }
 
-    public function getCount(
-        array $criteria
-    ): int {
+    public function getCount(array $criteria): int
+    {
         return $this->offerRepository->count(
             $criteria
         );
+    }
+
+    public function getUserHistory(int $page, int $userId): array
+    {
+        $offers = $this->offerRepository->getUserHistory($page, $userId);
+        foreach ($offers as $offer) {
+            $this->splitOfferItems($offer);
+        }
+        return $offers;
+    }
+
+    public function getUserHistoryCount(int $userId): int
+    {
+        return $this->offerRepository->getUserHistoryCount($userId);
     }
 
     public function createOffer(Offer $offer): array

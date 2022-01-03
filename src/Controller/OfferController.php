@@ -196,4 +196,40 @@ class OfferController extends AbstractController
             ["groups" => ["allOffers", "allStickers", "profile"]]
         );
     }
+
+    public function getUserHistory(
+        OfferService $offerService,
+        UserRepository $userRepository,
+        TranslatorInterface $translator,
+        Request $request
+    ): Response {
+        $response = [];
+        $status = StatusCode::STATUS_OK;
+
+        $page = $request->query->get("page") ?? 1;
+
+        $userId = $request->attributes->get("id");
+        $user = $userRepository->find($userId);
+
+        if (is_null($user)) {
+            $status = StatusCode::STATUS_BAD_REQUEST;
+            $response = [$translator->trans("user.not.found", [], "responses")];
+        } else {
+            if (!is_numeric($page) || $page < 1) {
+                $status = StatusCode::STATUS_BAD_REQUEST;
+                $response = $translator->trans("invalid.page", [], "responses");
+            } else {
+                $response = [
+                    "offers" => $offerService->getUserHistory($page, $userId),
+                    "count" => $offerService->getUserHistoryCount($userId)
+                ];
+            }
+        }
+        return $this->json(
+            $response,
+            $status,
+            [],
+            ["groups" => ["allOffers", "allStickers", "profile"]]
+        );
+    }
 }
