@@ -80,3 +80,8 @@ get_incoming_offers:
   path: /{_locale}/api/incoming
   controller: App\Controller\OfferController::getIncomingOffers
   methods: GET
+
+get_user_history:
+  path: /{_locale}/api/user/{id}/history
+  controller: App\Controller\OfferController::getUserHistory
+  methods: GET
