@@ -76,14 +76,29 @@ class OfferService
         }
     }
 
-    public function getOffers(int $page): array
+    private function setCriteria(int $statusId, ?int $userId, bool $isOwnOffers): array
     {
+        $criteria = [
+            "status_id" => $statusId
+        ];
+
+        if (isset($userId)) {
+            $criteria["creator_id"] = $userId;
+        }
+
+        if (!$isOwnOffers) {
+            $criteria["target_id"] = null;
+        }
+
+        return $criteria;
+    }
+
+    public function getOffers(int $page, int $statusId, int $userId = null, bool $isOwnOffers = false): array
+    {
+        $criteria = $this->setCriteria($statusId, $userId, $isOwnOffers);
         $offset = ($page - 1) * OfferRepository::OFFER_COUNT_PER_PAGE;
         $offers = $this->offerRepository->findBy(
-            [
-                "status_id" => Offer::STATUS_OPEN_ID,
-                "target_id" => null
-            ],
+            $criteria,
             ["created_at" => "ASC"],
             OfferRepository::OFFER_COUNT_PER_PAGE,
             $offset
@@ -95,13 +110,11 @@ class OfferService
         return $offers;
     }
 
-    public function getCount(): int
+    public function getCount(int $statusId, int $userId = null, bool $isOwnOffers = false): int
     {
+        $criteria = $this->setCriteria($statusId, $userId, $isOwnOffers);
         return $this->offerRepository->count(
-            [
-                "status_id" => Offer::STATUS_OPEN_ID,
-                "target_id" => null
-            ]
+            $criteria
         );
     }
 
