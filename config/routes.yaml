@@ -70,3 +70,8 @@ accept_offer:
   path: /{_locale}/api/offer/accept/{id}
   controller: App\Controller\OfferController::acceptOffer
   methods: POST
+
+get_user_offers:
+  path: /{_locale}/api/user/{id}/offers
+  controller: App\Controller\OfferController::getUserOffers
+  methods: GET

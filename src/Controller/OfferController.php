@@ -3,9 +3,11 @@
 namespace App\Controller;
 
 use App\Entity\Offer;
+use App\Repository\UserRepository;
 use App\Service\Offer\OfferService;
 use App\Service\Serializer\JsonSerializer;
 use App\Service\StatusCode;
+use App\Service\User\UserService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -27,8 +29,8 @@ class OfferController extends AbstractController
             $response = $translator->trans("invalid.page", [], "responses");
         } else {
             $response = [
-                "offers" => $offerService->getOffers($page),
-                "count" => $offerService->getCount()
+                "offers" => $offerService->getOffers($page, Offer::STATUS_OPEN_ID),
+                "count" => $offerService->getCount(Offer::STATUS_OPEN_ID)
             ];
         }
         return $this->json($response, $status, [], ["groups" => ["allOffers", "allStickers", "profile"]]);
@@ -113,5 +115,52 @@ class OfferController extends AbstractController
             }
         }
         return $this->json($response, $status);
+    }
+
+    public function getUserOffers(
+        OfferService $offerService,
+        UserRepository $userRepository,
+        TranslatorInterface $translator,
+        Request $request
+    ): Response {
+        $response = [];
+        $status = StatusCode::STATUS_OK;
+
+        $page = $request->query->get("page") ?? 1;
+
+        $userId = $request->attributes->get("id");
+        $user = $userRepository->find($userId);
+
+        if (is_null($user)) {
+            $status = StatusCode::STATUS_BAD_REQUEST;
+            $response = [$translator->trans("user.not.found", [], "responses")];
+        } else {
+            if (!is_numeric($page) || $page < 1) {
+                $status = StatusCode::STATUS_BAD_REQUEST;
+                $response = $translator->trans("invalid.page", [], "responses");
+            } else {
+                $isOwnOffers = !is_null($this->getUser()) && $userId == $this->getUser()->getId();
+
+                $response = [
+                    "offers" => $offerService->getOffers(
+                        $page,
+                        Offer::STATUS_OPEN_ID,
+                        $userId,
+                        $isOwnOffers
+                    ),
+                    "count" => $offerService->getCount(
+                        Offer::STATUS_OPEN_ID,
+                        $userId,
+                        $isOwnOffers
+                    )
+                ];
+            }
+        }
+        return $this->json(
+            $response,
+            $status,
+            [],
+            ["groups" => ["allOffers", "allStickers", "profile"]]
+        );
     }
 }
