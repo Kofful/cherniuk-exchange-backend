@@ -76,13 +76,17 @@ class OfferService
         }
     }
 
-    private function setCriteria(int $statusId, ?int $userId, bool $isOwnOffers): array
-    {
+    public function setCriteria(
+        int $statusId,
+        ?int $userId = null,
+        bool $isOwnOffers = false,
+        bool $isIncomingOffers = false
+    ): array {
         $criteria = [
             "status_id" => $statusId
         ];
 
-        if (isset($userId)) {
+        if (isset($userId) && !$isIncomingOffers) {
             $criteria["creator_id"] = $userId;
         }
 
@@ -90,12 +94,17 @@ class OfferService
             $criteria["target_id"] = null;
         }
 
+        if ($isIncomingOffers) {
+            $criteria["target_id"] = $userId;
+        }
+
         return $criteria;
     }
 
-    public function getOffers(int $page, int $statusId, int $userId = null, bool $isOwnOffers = false): array
-    {
-        $criteria = $this->setCriteria($statusId, $userId, $isOwnOffers);
+    public function getOffers(
+        int $page,
+        array $criteria
+    ): array {
         $offset = ($page - 1) * OfferRepository::OFFER_COUNT_PER_PAGE;
         $offers = $this->offerRepository->findBy(
             $criteria,
@@ -110,9 +119,9 @@ class OfferService
         return $offers;
     }
 
-    public function getCount(int $statusId, int $userId = null, bool $isOwnOffers = false): int
-    {
-        $criteria = $this->setCriteria($statusId, $userId, $isOwnOffers);
+    public function getCount(
+        array $criteria
+    ): int {
         return $this->offerRepository->count(
             $criteria
         );

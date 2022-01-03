@@ -28,9 +28,11 @@ class OfferController extends AbstractController
             $status = StatusCode::STATUS_BAD_REQUEST;
             $response = $translator->trans("invalid.page", [], "responses");
         } else {
+            $criteria = $offerService->setCriteria(Offer::STATUS_OPEN_ID);
+
             $response = [
-                "offers" => $offerService->getOffers($page, Offer::STATUS_OPEN_ID),
-                "count" => $offerService->getCount(Offer::STATUS_OPEN_ID)
+                "offers" => $offerService->getOffers($page, $criteria),
+                "count" => $offerService->getCount($criteria)
             ];
         }
         return $this->json($response, $status, [], ["groups" => ["allOffers", "allStickers", "profile"]]);
@@ -140,21 +142,52 @@ class OfferController extends AbstractController
                 $response = $translator->trans("invalid.page", [], "responses");
             } else {
                 $isOwnOffers = !is_null($this->getUser()) && $userId == $this->getUser()->getId();
+                $criteria = $offerService->setCriteria(
+                    Offer::STATUS_OPEN_ID,
+                    $userId,
+                    $isOwnOffers
+                );
 
                 $response = [
-                    "offers" => $offerService->getOffers(
-                        $page,
-                        Offer::STATUS_OPEN_ID,
-                        $userId,
-                        $isOwnOffers
-                    ),
-                    "count" => $offerService->getCount(
-                        Offer::STATUS_OPEN_ID,
-                        $userId,
-                        $isOwnOffers
-                    )
+                    "offers" => $offerService->getOffers($page, $criteria),
+                    "count" => $offerService->getCount($criteria)
                 ];
             }
+        }
+        return $this->json(
+            $response,
+            $status,
+            [],
+            ["groups" => ["allOffers", "allStickers", "profile"]]
+        );
+    }
+
+    public function getIncomingOffers(
+        OfferService $offerService,
+        UserRepository $userRepository,
+        TranslatorInterface $translator,
+        Request $request
+    ): Response {
+        $response = [];
+        $status = StatusCode::STATUS_OK;
+
+        $page = $request->query->get("page") ?? 1;
+
+        if (!is_numeric($page) || $page < 1) {
+            $status = StatusCode::STATUS_BAD_REQUEST;
+            $response = $translator->trans("invalid.page", [], "responses");
+        } else {
+            $criteria = $offerService->setCriteria(
+                Offer::STATUS_OPEN_ID,
+                $this->getUser()->getId(),
+                false,
+                true
+            );
+
+            $response = [
+                "offers" => $offerService->getOffers($page, $criteria),
+                "count" => $offerService->getCount($criteria)
+            ];
         }
         return $this->json(
             $response,
