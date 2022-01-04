@@ -3,22 +3,9 @@
 namespace App\Service\Validator;
 
 use App\Entity\User;
-use Symfony\Component\Validator\Constraints\Valid;
-use Symfony\Component\Validator\Validation;
-use Symfony\Component\Validator\Validator\ValidatorInterface;
-use Symfony\Contracts\Translation\TranslatorInterface;
 
-class RegistrationValidator
+class RegistrationValidator extends Validator
 {
-    private ValidatorInterface $validator;
-    private TranslatorInterface $translator;
-
-    public function __construct(ValidatorInterface $validator, TranslatorInterface $translator)
-    {
-        $this->validator = $validator;
-        $this->translator = $translator;
-    }
-
     public function validateUser(User $user): array
     {
         $result = [];
