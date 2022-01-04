@@ -17,10 +17,8 @@ class InventoryItemController extends AbstractController
         InventoryService $inventoryService,
         UserRepository $userRepository,
         TranslatorInterface $translator,
-        SerializerInterface $serializer,
         Request $request
     ): Response {
-        $response = [];
         $status = Response::HTTP_OK;
 
         $page = $request->query->get("page") ?? 1;
@@ -31,12 +29,7 @@ class InventoryItemController extends AbstractController
 
         if (isset($user)) {
             $isInOwnProfile = $this->getUser() && $this->getUser()->getId() == $user->getId();
-            if ($isInOwnProfile) {
-                $response["stickers"] = $inventoryService->getOwnItems($user->getId(), $page);
-            } else {
-                $response["stickers"] = $inventoryService->getUserItems($user->getId(), $page);
-            }
-            $response["count"] = $inventoryService->getUserItemsCount($user->getId());
+            $response = $inventoryService->getItemsWithCount($user->getId(), $page, $isInOwnProfile);
         } else {
             $status = Response::HTTP_BAD_REQUEST;
             $response = [$translator->trans("user.not.found", [], "responses")];

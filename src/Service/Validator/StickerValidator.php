@@ -3,17 +3,9 @@
 namespace App\Service\Validator;
 
 use App\Entity\Sticker;
-use Symfony\Component\Validator\Validator\ValidatorInterface;
 
-class StickerValidator
+class StickerValidator extends Validator
 {
-    private ValidatorInterface $validator;
-
-    public function __construct(ValidatorInterface $validator)
-    {
-        $this->validator = $validator;
-    }
-
     public function validateSticker(Sticker $sticker, array $properties = ["name", "coefficient"]): array
     {
         $result = [];

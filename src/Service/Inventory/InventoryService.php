@@ -49,6 +49,18 @@ class InventoryService
         return $items;
     }
 
+    public function getItemsWithCount(int $userId, int $page, bool $isOwnItems): array
+    {
+        $itemList = [];
+        if ($isOwnItems) {
+            $itemList["stickers"] = $this->getOwnItems($userId, $page);
+        } else {
+            $itemList["stickers"] = $this->getUserItems($userId, $page);
+        }
+        $itemList["count"] = $this->getUserItemsCount($userId);
+        return $itemList;
+    }
+
     public function getUserItemsCount(int $userId): int
     {
         return $this->inventoryItemRepository->getItemsCountByUserId($userId);
