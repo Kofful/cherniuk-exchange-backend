@@ -5,7 +5,6 @@ namespace App\Controller;
 use App\Repository\InventoryItemRepository;
 use App\Repository\UserRepository;
 use App\Service\Inventory\InventoryService;
-use App\Service\StatusCode;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -22,7 +21,7 @@ class InventoryItemController extends AbstractController
         Request $request
     ): Response {
         $response = [];
-        $status = StatusCode::STATUS_OK;
+        $status = Response::HTTP_OK;
 
         $page = $request->query->get("page") ?? 1;
 
@@ -39,7 +38,7 @@ class InventoryItemController extends AbstractController
             }
             $response["count"] = $inventoryService->getUserItemsCount($user->getId());
         } else {
-            $status = StatusCode::STATUS_BAD_REQUEST;
+            $status = Response::HTTP_BAD_REQUEST;
             $response = [$translator->trans("user.not.found", [], "responses")];
         }
 
@@ -58,24 +57,24 @@ class InventoryItemController extends AbstractController
         Request $request
     ): Response {
         $response = [];
-        $status = StatusCode::STATUS_OK;
+        $status = Response::HTTP_OK;
         $itemId = $request->attributes->get("id");
         $item = $inventoryItemRepository->find($itemId);
 
         if (!$item) {
             $response = [$translator->trans("item.not.found", [], "responses")];
-            $status = StatusCode::STATUS_BAD_REQUEST;
+            $status = Response::HTTP_BAD_REQUEST;
             return $this->json($response, $status);
         }
 
         if ($this->getUser()->getId() != $item->getOwnerId()) {
             $response = [$translator->trans("item.cannot.sell", [], "responses")];
-            $status = StatusCode::STATUS_ACCESS_DENIED;
+            $status = Response::HTTP_FORBIDDEN;
             return $this->json($response, $status);
         }
 
         if (!$inventoryService->sellItem($itemId)) {
-            $status = StatusCode::STATUS_ACCESS_DENIED;
+            $status = Response::HTTP_FORBIDDEN;
         }
 
         return $this->json($response, $status);
