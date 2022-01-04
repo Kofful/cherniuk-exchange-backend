@@ -5,14 +5,12 @@ namespace App\Controller;
 use App\Entity\User;
 use App\Service\Image\ImageService;
 use App\Service\Inventory\InventoryService;
-use App\Service\StatusCode;
 use App\Service\Sticker\StickerService;
 use App\Service\User\UserService;
 use App\Service\Validator\StickerValidator;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 class StickerController extends AbstractController
@@ -33,7 +31,7 @@ class StickerController extends AbstractController
         return $this->json([
             "stickers" => $stickers,
             "count" => $count
-        ], StatusCode::STATUS_OK, [], ["groups" => $groups]);
+        ], Response::HTTP_OK, [], ["groups" => $groups]);
     }
 
     public function add(
@@ -44,7 +42,7 @@ class StickerController extends AbstractController
         Request $request
     ): Response {
         $body = [];
-        $status = StatusCode::STATUS_OK;
+        $status = Response::HTTP_OK;
 
         $file = $request->files->get("sticker");
         $fileName = $imageService->saveImageToDirectory($file);
@@ -57,13 +55,13 @@ class StickerController extends AbstractController
             $errors = $stickerValidator->validateSticker($sticker);
 
             if (count($errors) > 0) {
-                $status = StatusCode::STATUS_BAD_REQUEST;
+                $status = Response::HTTP_BAD_REQUEST;
                 $body = $errors;
             } else {
                 $stickerService->add($sticker);
             }
         } else {
-            $status = StatusCode::STATUS_BAD_REQUEST;
+            $status = Response::HTTP_BAD_REQUEST;
             $body = [$translator->trans("file.cannot.save", [], "responses")];
         }
 
@@ -77,7 +75,7 @@ class StickerController extends AbstractController
         Request $request
     ): Response {
         $body = [];
-        $status = StatusCode::STATUS_OK;
+        $status = Response::HTTP_OK;
         $file = $request->files->get("sticker");
         $fileName = $imageService->saveImageToDirectory($file);
 
@@ -99,7 +97,7 @@ class StickerController extends AbstractController
         );
 
         if (count($errors) > 0) {
-            $status = StatusCode::STATUS_BAD_REQUEST;
+            $status = Response::HTTP_BAD_REQUEST;
             $body = $errors;
         } else {
             $stickerService->update($sticker);
@@ -114,7 +112,7 @@ class StickerController extends AbstractController
         InventoryService $inventoryService,
         TranslatorInterface $translator
     ): Response {
-        $status = StatusCode::STATUS_OK;
+        $status = Response::HTTP_OK;
 
         $user = $this->getUser();
 
@@ -126,7 +124,7 @@ class StickerController extends AbstractController
             $response = $response->getId();
         } else {
             $response = [$translator->trans("sticker.cannot.receive", [], "responses")];
-            $status = StatusCode::STATUS_ACCESS_DENIED;
+            $status = Response::HTTP_FORBIDDEN;
         }
 
         return $this->json($response, $status);

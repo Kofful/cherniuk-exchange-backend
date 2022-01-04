@@ -6,8 +6,6 @@ use App\Entity\Offer;
 use App\Repository\UserRepository;
 use App\Service\Offer\OfferService;
 use App\Service\Serializer\JsonSerializer;
-use App\Service\StatusCode;
-use App\Service\User\UserService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -22,10 +20,10 @@ class OfferController extends AbstractController
         Request $request
     ): Response {
         $response = [];
-        $status = StatusCode::STATUS_OK;
+        $status = Response::HTTP_OK;
         $page = $request->query->get("page") ?? 1;
         if (!is_numeric($page) || $page < 1) {
-            $status = StatusCode::STATUS_BAD_REQUEST;
+            $status = Response::HTTP_BAD_REQUEST;
             $response = $translator->trans("invalid.page", [], "responses");
         } else {
             $criteria = $offerService->setCriteria(Offer::STATUS_OPEN_ID);
@@ -46,15 +44,15 @@ class OfferController extends AbstractController
         Request $request
     ): Response {
         $response = [];
-        $status = StatusCode::STATUS_OK;
+        $status = Response::HTTP_OK;
         $offer = $serializer->deserialize($request->getContent(), Offer::class);
         if (is_null($offer)) {
             $response = $translator->trans("invalid.types", [], "validators");
-            $status = StatusCode::STATUS_BAD_REQUEST;
+            $status = Response::HTTP_BAD_REQUEST;
         } else {
             $errors = $validator->validate($offer);
             if (count($errors) > 0) {
-                $status = StatusCode::STATUS_BAD_REQUEST;
+                $status = Response::HTTP_BAD_REQUEST;
                 foreach ($errors as $error) {
                     $response[] = $error->getMessage();
                 }
@@ -62,7 +60,7 @@ class OfferController extends AbstractController
                 $offer->setCreator($this->getUser());
                 $errors = $offerService->createOffer($offer);
                 if (count($errors) > 0) {
-                    $status = StatusCode::STATUS_BAD_REQUEST;
+                    $status = Response::HTTP_BAD_REQUEST;
                     foreach ($errors as $error) {
                         $response[] = $translator->trans($error, [], "responses");
                     }
@@ -126,7 +124,7 @@ class OfferController extends AbstractController
         Request $request
     ): Response {
         $response = [];
-        $status = StatusCode::STATUS_OK;
+        $status = Response::HTTP_OK;
 
         $page = $request->query->get("page") ?? 1;
 
@@ -134,11 +132,11 @@ class OfferController extends AbstractController
         $user = $userRepository->find($userId);
 
         if (is_null($user)) {
-            $status = StatusCode::STATUS_BAD_REQUEST;
+            $status = Response::HTTP_BAD_REQUEST;
             $response = [$translator->trans("user.not.found", [], "responses")];
         } else {
             if (!is_numeric($page) || $page < 1) {
-                $status = StatusCode::STATUS_BAD_REQUEST;
+                $status = Response::HTTP_BAD_REQUEST;
                 $response = $translator->trans("invalid.page", [], "responses");
             } else {
                 $isOwnOffers = !is_null($this->getUser()) && $userId == $this->getUser()->getId();
@@ -169,12 +167,12 @@ class OfferController extends AbstractController
         Request $request
     ): Response {
         $response = [];
-        $status = StatusCode::STATUS_OK;
+        $status = Response::HTTP_OK;
 
         $page = $request->query->get("page") ?? 1;
 
         if (!is_numeric($page) || $page < 1) {
-            $status = StatusCode::STATUS_BAD_REQUEST;
+            $status = Response::HTTP_BAD_REQUEST;
             $response = $translator->trans("invalid.page", [], "responses");
         } else {
             $criteria = $offerService->setCriteria(
@@ -204,7 +202,7 @@ class OfferController extends AbstractController
         Request $request
     ): Response {
         $response = [];
-        $status = StatusCode::STATUS_OK;
+        $status = Response::HTTP_OK;
 
         $page = $request->query->get("page") ?? 1;
 
@@ -212,11 +210,11 @@ class OfferController extends AbstractController
         $user = $userRepository->find($userId);
 
         if (is_null($user)) {
-            $status = StatusCode::STATUS_BAD_REQUEST;
+            $status = Response::HTTP_BAD_REQUEST;
             $response = [$translator->trans("user.not.found", [], "responses")];
         } else {
             if (!is_numeric($page) || $page < 1) {
-                $status = StatusCode::STATUS_BAD_REQUEST;
+                $status = Response::HTTP_BAD_REQUEST;
                 $response = $translator->trans("invalid.page", [], "responses");
             } else {
                 $response = [
