@@ -6,6 +6,7 @@ use App\Entity\Offer;
 use App\Repository\UserRepository;
 use App\Service\Offer\OfferService;
 use App\Service\Serializer\JsonSerializer;
+use App\Service\Validator\OfferValidator;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -49,22 +50,24 @@ class OfferController extends AbstractController
         if (is_null($offer)) {
             $response = $translator->trans("invalid.types", [], "validators");
             $status = Response::HTTP_BAD_REQUEST;
-        } else {
-            $errors = $validator->validate($offer);
-            if (count($errors) > 0) {
-                $status = Response::HTTP_BAD_REQUEST;
-                foreach ($errors as $error) {
-                    $response[] = $error->getMessage();
-                }
-            } else {
-                $offer->setCreator($this->getUser());
-                $errors = $offerService->createOffer($offer);
-                if (count($errors) > 0) {
-                    $status = Response::HTTP_BAD_REQUEST;
-                    foreach ($errors as $error) {
-                        $response[] = $translator->trans($error, [], "responses");
-                    }
-                }
+            return $this->json($response, $status);
+        }
+
+        $errors = $validator->validate($offer);
+        if (count($errors) > 0) {
+            $status = Response::HTTP_BAD_REQUEST;
+            foreach ($errors as $error) {
+                $response[] = $error->getMessage();
+            }
+            return $this->json($response, $status);
+        }
+
+        $offer->setCreator($this->getUser());
+        $errors = $offerService->createOffer($offer);
+        if (count($errors) > 0) {
+            $status = Response::HTTP_BAD_REQUEST;
+            foreach ($errors as $error) {
+                $response[] = $translator->trans($error, [], "responses");
             }
         }
         return $this->json($response, $status);
@@ -99,19 +102,21 @@ class OfferController extends AbstractController
         $status = Response::HTTP_OK;
         $offerId = $request->get("id");
         $user = $this->getUser();
+
         $errors = $offerService->checkAcceptPermissions($user, $offerId);
         if (count($errors) > 0) {
             $status = Response::HTTP_FORBIDDEN;
             foreach ($errors as $error) {
                 $response[] = $translator->trans($error, [], "responses");
             }
-        } else {
-            $errors = $offerService->acceptOffer($user, $offerId);
-            if (count($errors) > 0) {
-                $status = Response::HTTP_FORBIDDEN;
-                foreach ($errors as $error) {
-                    $response[] = $translator->trans($error, [], "responses");
-                }
+            return $this->json($response, $status);
+        }
+
+        $errors = $offerService->acceptOffer($user, $offerId);
+        if (count($errors) > 0) {
+            $status = Response::HTTP_FORBIDDEN;
+            foreach ($errors as $error) {
+                $response[] = $translator->trans($error, [], "responses");
             }
         }
         return $this->json($response, $status);
@@ -120,7 +125,7 @@ class OfferController extends AbstractController
     public function getUserOffers(
         OfferService $offerService,
         UserRepository $userRepository,
-        TranslatorInterface $translator,
+        OfferValidator $validator,
         Request $request
     ): Response {
         $response = [];
@@ -131,26 +136,22 @@ class OfferController extends AbstractController
         $userId = $request->attributes->get("id");
         $user = $userRepository->find($userId);
 
-        if (is_null($user)) {
+        $errors = $validator->validateUserOffers($page, $user);
+        if (count($errors) > 0) {
             $status = Response::HTTP_BAD_REQUEST;
-            $response = [$translator->trans("user.not.found", [], "responses")];
+            $response = $errors;
         } else {
-            if (!is_numeric($page) || $page < 1) {
-                $status = Response::HTTP_BAD_REQUEST;
-                $response = $translator->trans("invalid.page", [], "responses");
-            } else {
-                $isOwnOffers = !is_null($this->getUser()) && $userId == $this->getUser()->getId();
-                $criteria = $offerService->setCriteria(
-                    Offer::STATUS_OPEN_ID,
-                    $userId,
-                    $isOwnOffers
-                );
+            $isOwnOffers = !is_null($this->getUser()) && $userId == $this->getUser()->getId();
+            $criteria = $offerService->setCriteria(
+                Offer::STATUS_OPEN_ID,
+                $userId,
+                $isOwnOffers
+            );
 
-                $response = [
-                    "offers" => $offerService->getOffers($page, $criteria),
-                    "count" => $offerService->getCount($criteria)
-                ];
-            }
+            $response = [
+                "offers" => $offerService->getOffers($page, $criteria),
+                "count" => $offerService->getCount($criteria)
+            ];
         }
         return $this->json(
             $response,
@@ -162,8 +163,7 @@ class OfferController extends AbstractController
 
     public function getIncomingOffers(
         OfferService $offerService,
-        UserRepository $userRepository,
-        TranslatorInterface $translator,
+        OfferValidator $validator,
         Request $request
     ): Response {
         $response = [];
@@ -171,9 +171,10 @@ class OfferController extends AbstractController
 
         $page = $request->query->get("page") ?? 1;
 
-        if (!is_numeric($page) || $page < 1) {
+        $errors = $validator->validateIncoming($page);
+        if (count($errors) > 0) {
             $status = Response::HTTP_BAD_REQUEST;
-            $response = $translator->trans("invalid.page", [], "responses");
+            $response = $errors;
         } else {
             $criteria = $offerService->setCriteria(
                 Offer::STATUS_OPEN_ID,
@@ -198,7 +199,7 @@ class OfferController extends AbstractController
     public function getUserHistory(
         OfferService $offerService,
         UserRepository $userRepository,
-        TranslatorInterface $translator,
+        OfferValidator $validator,
         Request $request
     ): Response {
         $response = [];
@@ -209,19 +210,16 @@ class OfferController extends AbstractController
         $userId = $request->attributes->get("id");
         $user = $userRepository->find($userId);
 
-        if (is_null($user)) {
+
+        $errors = $validator->validateUserOffers($page, $user);
+        if (count($errors) > 0) {
             $status = Response::HTTP_BAD_REQUEST;
-            $response = [$translator->trans("user.not.found", [], "responses")];
+            $response = $errors;
         } else {
-            if (!is_numeric($page) || $page < 1) {
-                $status = Response::HTTP_BAD_REQUEST;
-                $response = $translator->trans("invalid.page", [], "responses");
-            } else {
-                $response = [
-                    "offers" => $offerService->getUserHistory($page, $userId),
-                    "count" => $offerService->getUserHistoryCount($userId)
-                ];
-            }
+            $response = [
+                "offers" => $offerService->getUserHistory($page, $userId),
+                "count" => $offerService->getUserHistoryCount($userId)
+            ];
         }
         return $this->json(
             $response,
