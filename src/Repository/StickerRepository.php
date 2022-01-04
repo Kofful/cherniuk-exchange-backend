@@ -22,22 +22,30 @@ class StickerRepository extends ServiceEntityRepository
         parent::__construct($registry, Sticker::class);
     }
 
-    /**
-     * @param int $page
-     * @param int $limit
-     * @return Sticker[]
-     */
-    public function findPage(int $page, int $limit): array
+    public function findPage(int $page, string $name, int $limit): array
     {
         $queryBuilder = new QueryBuilder($this->getEntityManager());
         $query = $queryBuilder
             ->select("st")
             ->from(self::STICKER_CLASS, "st")
+            ->where("st.name LIKE '%$name%'")
             ->orderBy("st.id", "ASC")
             ->setFirstResult(($page - 1) * $limit)
             ->setMaxResults($limit)
             ->getQuery();
         return $query->getResult();
+    }
+
+    public function getCount(string $name): int
+    {
+        $queryBuilder = new QueryBuilder($this->getEntityManager());
+        $query = $queryBuilder
+            ->select("count(st.id)")
+            ->from(self::STICKER_CLASS, "st")
+            ->where("st.name LIKE '%$name%'")
+            ->orderBy("st.id", "ASC")
+            ->getQuery();
+        return $query->getSingleScalarResult();
     }
 
 

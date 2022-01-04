@@ -18,13 +18,14 @@ class StickerController extends AbstractController
     public function getAll(StickerService $stickerService, Request $request): Response
     {
         $page = $request->query->get("page") ?? 1;
+        $query = $request->query->get("query") ?? "";
         $limit = $request->query->get("limit") ?? 10;
         $user = $this->getUser();
 
         $withCoefficients = isset($user) && in_array(User::ADMIN_ROLE_NAME, $this->getUser()->getRoles());
 
-        $stickers = $stickerService->getAll($page, $limit);
-        $count = $stickerService->getCount();
+        $stickers = $stickerService->getAll($page, $query, $limit);
+        $count = $stickerService->getCount($query);
 
         $groups = $withCoefficients ? ["allStickers", "allStickersAdmin"] : ["allStickers"];
 
