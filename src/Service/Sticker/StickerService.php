@@ -57,9 +57,9 @@ class StickerService
         }
     }
 
-    public function getAll(int $page, int $limit): array
+    public function getAll(int $page, string $query, int $limit): array
     {
-        $stickers = $this->stickerRepository->findPage($page, $limit);
+        $stickers = $this->stickerRepository->findPage($page, $query, $limit);
 
         foreach ($stickers as $sticker) {
             $this->addPath($sticker);
@@ -68,9 +68,9 @@ class StickerService
         return $stickers;
     }
 
-    public function getCount(): int
+    public function getCount(string $query): int
     {
-        return $this->stickerRepository->count([]);
+        return $this->stickerRepository->getCount($query);
     }
 
     public function prepareSticker(array $query, array $whitelist): Sticker

@@ -34,27 +34,34 @@ class InventoryItemRepository extends ServiceEntityRepository
      * @param int $userId
      * @return InventoryItem[]
      */
-    public function getItemsByUserId(int $userId, int $page): array
+    public function getItemsByUserId(int $userId, string $name, int $page): array
     {
         $limit = 25;
         $queryBuilder = new QueryBuilder($this->getEntityManager());
         $query = $queryBuilder
             ->select("it")
             ->from(self::INVENTORY_ITEM_CLASS, "it")
+            ->join(StickerRepository::STICKER_CLASS, "st")
             ->where("it.owner_id = $userId")
+            ->andWhere("it.sticker_id = st.id")
+            ->andWhere("st.name like '%$name%'")
             ->setFirstResult(($page - 1) * $limit)
             ->setMaxResults($limit)
+            ->groupBy("it.id")
             ->getQuery();
         return $query->getResult();
     }
 
-    public function getItemsCountByUserId(int $userId): int
+    public function getItemsCountByUserId(int $userId, string $name): int
     {
         $queryBuilder = new QueryBuilder($this->getEntityManager());
         $query = $queryBuilder
             ->select("count(it.id)")
             ->from(self::INVENTORY_ITEM_CLASS, "it")
+            ->join(StickerRepository::STICKER_CLASS, "st")
             ->where("it.owner_id = $userId")
+            ->andWhere("it.sticker_id = st.id")
+            ->andWhere("st.name like '%$name%'")
             ->getQuery();
         $result = $query->getSingleScalarResult();
         return $result;
