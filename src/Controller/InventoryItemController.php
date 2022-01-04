@@ -22,6 +22,7 @@ class InventoryItemController extends AbstractController
         $status = Response::HTTP_OK;
 
         $page = $request->query->get("page") ?? 1;
+        $query = $request->query->get("query") ?? "";
 
         $userId = $request->attributes->get("id");
         $user = $userRepository->find($userId);
@@ -29,7 +30,12 @@ class InventoryItemController extends AbstractController
 
         if (isset($user)) {
             $isInOwnProfile = $this->getUser() && $this->getUser()->getId() == $user->getId();
-            $response = $inventoryService->getItemsWithCount($user->getId(), $page, $isInOwnProfile);
+            $response = $inventoryService->getItemsWithCount(
+                $user->getId(),
+                $query,
+                $page,
+                $isInOwnProfile
+            );
         } else {
             $status = Response::HTTP_BAD_REQUEST;
             $response = [$translator->trans("user.not.found", [], "responses")];

@@ -30,18 +30,18 @@ class InventoryService
         $this->inventoryItemRepository->addItem($newItem);
     }
 
-    public function getUserItems(int $userId, int $page): array
+    public function getUserItems(int $userId, string $query, int $page): array
     {
-        $items = $this->inventoryItemRepository->getItemsByUserId($userId, $page);
+        $items = $this->inventoryItemRepository->getItemsByUserId($userId, $query, $page);
         foreach ($items as $item) {
             $this->stickerService->addPath($item->getSticker());
         }
         return $items;
     }
 
-    public function getOwnItems(int $userId, int $page): array
+    public function getOwnItems(int $userId, string $query, int $page): array
     {
-        $items = $this->inventoryItemRepository->getItemsByUserId($userId, $page);
+        $items = $this->inventoryItemRepository->getItemsByUserId($userId, $query, $page);
         foreach ($items as $item) {
             $this->stickerService->addPrice($item->getSticker());
             $this->stickerService->addPath($item->getSticker());
@@ -49,21 +49,21 @@ class InventoryService
         return $items;
     }
 
-    public function getItemsWithCount(int $userId, int $page, bool $isOwnItems): array
+    public function getItemsWithCount(int $userId, string $query, int $page, bool $isOwnItems): array
     {
         $itemList = [];
         if ($isOwnItems) {
-            $itemList["stickers"] = $this->getOwnItems($userId, $page);
+            $itemList["stickers"] = $this->getOwnItems($userId, $query, $page);
         } else {
-            $itemList["stickers"] = $this->getUserItems($userId, $page);
+            $itemList["stickers"] = $this->getUserItems($userId, $query, $page);
         }
-        $itemList["count"] = $this->getUserItemsCount($userId);
+        $itemList["count"] = $this->getUserItemsCount($userId, $query);
         return $itemList;
     }
 
-    public function getUserItemsCount(int $userId): int
+    public function getUserItemsCount(int $userId, string $query): int
     {
-        return $this->inventoryItemRepository->getItemsCountByUserId($userId);
+        return $this->inventoryItemRepository->getItemsCountByUserId($userId, $query);
     }
 
     public function sellItem(int $itemId): bool
