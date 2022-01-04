@@ -274,8 +274,10 @@ class OfferService
             $this->setStatus($offer, Offer::STATUS_OPEN_ID);
         } else {
             $creator = $offer->getCreator();
-            $creator->setWallet($creator->getWallet() - $offer->getCreatorPayment());
-            $user->setWallet($user->getWallet() - $offer->getTargetPayment());
+            $newCreatorWallet = $creator->getWallet() - $offer->getCreatorPayment() + $offer->getTargetPayment();
+            $newTargetWallet = $user->getWallet() - $offer->getTargetPayment() + $offer->getCreatorPayment();
+            $creator->setWallet($newCreatorWallet);
+            $user->setWallet($newTargetWallet);
             foreach ($participantsItems as $item) {
                 if ($item->getOwner()->getId() == $user->getId()) {
                     $item->setOwner($creator);
