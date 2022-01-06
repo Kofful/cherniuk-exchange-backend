@@ -101,14 +101,16 @@ class OfferService
         return $criteria;
     }
 
-    public function getOffers(int $page, array $criteria): array
+    public function getOffers(array $query): array
     {
-        $offset = ($page - 1) * OfferRepository::OFFER_COUNT_PER_PAGE;
-        $offers = $this->offerRepository->findBy(
-            $criteria,
-            ["created_at" => "ASC"],
-            OfferRepository::OFFER_COUNT_PER_PAGE,
-            $offset
+        $offers = $this->offerRepository->getOpenOffers(
+            $query["page"],
+            $query["minTargetPayment"],
+            $query["maxTargetPayment"],
+            $query["targetQuery"],
+            $query["minCreatorPayment"],
+            $query["maxCreatorPayment"],
+            $query["creatorQuery"]
         );
         foreach ($offers as $offer) {
             $this->splitOfferItems($offer);
@@ -117,10 +119,15 @@ class OfferService
         return $offers;
     }
 
-    public function getCount(array $criteria): int
+    public function getCount(array $query): int
     {
-        return $this->offerRepository->count(
-            $criteria
+        return $this->offerRepository->getOpenOffersCount(
+            $query["minTargetPayment"],
+            $query["maxTargetPayment"],
+            $query["targetQuery"],
+            $query["minCreatorPayment"],
+            $query["maxCreatorPayment"],
+            $query["creatorQuery"]
         );
     }
 
@@ -201,7 +208,7 @@ class OfferService
     private function getParticipantsItems(User $user, Offer $offer): array
     {
         $targetItems = $this->inventoryItemRepository->findBy(["owner_id" => $user->getId()]);
-        $creatorItems =  $this->inventoryItemRepository->findBy(["owner_id" => $offer->getCreatorId()]);
+        $creatorItems = $this->inventoryItemRepository->findBy(["owner_id" => $offer->getCreatorId()]);
         $offerItems = $offer->getItems();
         $participantsItems = [];
 
@@ -312,5 +319,18 @@ class OfferService
         $offer = $this->offerRepository->find($offerId);
         $this->entityManager->remove($offer);
         $this->entityManager->flush();
+    }
+
+    public function prepareGettingOfferQuery(array $query): array
+    {
+        return [
+            "page" => $query["page"] ?? 1,
+            "minTargetPayment" => $query["minTargetPayment"] ?? 0,
+            "maxTargetPayment" => $query["maxTargetPayment"] ?? 10000,
+            "targetQuery" => $query["targetQuery"] ?? "",
+            "minCreatorPayment" => $query["minCreatorPayment"] ?? 0,
+            "maxCreatorPayment" => $query["maxCreatorPayment"] ?? 10000,
+            "creatorQuery" => $query["creatorQuery"] ?? ""
+        ];
     }
 }

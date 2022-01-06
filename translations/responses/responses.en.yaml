@@ -19,4 +19,6 @@ offer:
   not.found: "Offer not found."
   deleting.forbidden: "Offer deleting is forbidden!"
 
-invalid.page: "Wrong page number."
+invalid:
+  page: "Wrong page number."
+  payment: "Wrong payment."

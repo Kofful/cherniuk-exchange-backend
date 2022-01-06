@@ -8,8 +8,15 @@ class OfferValidator extends Validator
 {
     private function validatePage($page): array
     {
-        $isValid = is_numeric($page) &&  $page > 0;
+        $isValid = is_numeric($page) && $page > 0;
         $errors = $isValid ? [] : [$this->translator->trans("invalid.page", [], "responses")];
+        return $errors;
+    }
+
+    private function validatePayment($payment): array
+    {
+        $isValid = is_numeric($payment) && $payment >= 0;
+        $errors = $isValid ? [] : [$this->translator->trans("invalid.payment", [], "responses")];
         return $errors;
     }
 
@@ -29,6 +36,21 @@ class OfferValidator extends Validator
     {
         $errors = $this->validatePage($page);
         $errors = array_merge($errors, $this->validateUser($user));
+        return $errors;
+    }
+
+    public function validateGettingOfferQuery(array $query): array
+    {
+        $errors = $this->validatePage($query["page"]);
+        $payments = [
+            $query["minTargetPayment"],
+            $query["maxTargetPayment"],
+            $query["minCreatorPayment"],
+            $query["maxCreatorPayment"]
+        ];
+        foreach ($payments as $payment) {
+            $errors = array_merge($errors, $this->validatePayment($payment));
+        }
         return $errors;
     }
 }

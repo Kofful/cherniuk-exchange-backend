@@ -14,6 +14,8 @@ use Doctrine\Persistence\ManagerRegistry;
  */
 class OfferItemRepository extends ServiceEntityRepository
 {
+    public const OFFER_ITEM_CLASS = "App\\Entity\\OfferItem";
+
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, OfferItem::class);

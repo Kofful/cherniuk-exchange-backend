@@ -17,21 +17,20 @@ class OfferController extends AbstractController
 {
     public function getOffers(
         OfferService $offerService,
-        TranslatorInterface $translator,
+        OfferValidator $validator,
         Request $request
     ): Response {
         $response = [];
         $status = Response::HTTP_OK;
-        $page = $request->query->get("page") ?? 1;
-        if (!is_numeric($page) || $page < 1) {
+        $query = $offerService->prepareGettingOfferQuery($request->query->all());
+        $errors = $validator->validateGettingOfferQuery($query);
+        if (count($errors) > 0) {
             $status = Response::HTTP_BAD_REQUEST;
-            $response = $translator->trans("invalid.page", [], "responses");
+            $response = $errors;
         } else {
-            $criteria = $offerService->setCriteria(Offer::STATUS_OPEN_ID);
-
             $response = [
-                "offers" => $offerService->getOffers($page, $criteria),
-                "count" => $offerService->getCount($criteria)
+                "offers" => $offerService->getOffers($query),
+                "count" => $offerService->getCount($query)
             ];
         }
         return $this->json($response, $status, [], ["groups" => ["allOffers", "allStickers", "profile"]]);
