@@ -101,14 +101,16 @@ class OfferService
         return $criteria;
     }
 
-    public function getOffers(int $page, array $criteria): array
+    public function getOffers(array $query): array
     {
-        $offset = ($page - 1) * OfferRepository::OFFER_COUNT_PER_PAGE;
-        $offers = $this->offerRepository->findBy(
-            $criteria,
-            ["created_at" => "ASC"],
-            OfferRepository::OFFER_COUNT_PER_PAGE,
-            $offset
+        $offers = $this->offerRepository->getOpenOffers(
+            $query["page"],
+            $query["minTargetPayment"],
+            $query["maxTargetPayment"],
+            $query["targetQuery"],
+            $query["minCreatorPayment"],
+            $query["maxCreatorPayment"],
+            $query["creatorQuery"]
         );
         foreach ($offers as $offer) {
             $this->splitOfferItems($offer);
@@ -117,10 +119,15 @@ class OfferService
         return $offers;
     }
 
-    public function getCount(array $criteria): int
+    public function getCount(array $query): int
     {
-        return $this->offerRepository->count(
-            $criteria
+        return $this->offerRepository->getOpenOffersCount(
+            $query["minTargetPayment"],
+            $query["maxTargetPayment"],
+            $query["targetQuery"],
+            $query["minCreatorPayment"],
+            $query["maxCreatorPayment"],
+            $query["creatorQuery"]
         );
     }
 

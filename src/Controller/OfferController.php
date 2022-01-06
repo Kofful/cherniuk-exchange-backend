@@ -28,11 +28,9 @@ class OfferController extends AbstractController
             $status = Response::HTTP_BAD_REQUEST;
             $response = $errors;
         } else {
-            $criteria = $offerService->setCriteria(Offer::STATUS_OPEN_ID);
-
             $response = [
-                "offers" => $offerService->getOffers($query["page"], $criteria),
-                "count" => $offerService->getCount($criteria)
+                "offers" => $offerService->getOffers($query),
+                "count" => $offerService->getCount($query)
             ];
         }
         return $this->json($response, $status, [], ["groups" => ["allOffers", "allStickers", "profile"]]);
