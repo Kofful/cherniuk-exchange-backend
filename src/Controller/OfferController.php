@@ -148,8 +148,8 @@ class OfferController extends AbstractController
             );
 
             $response = [
-                "offers" => $offerService->getOffers($page, $criteria),
-                "count" => $offerService->getCount($criteria)
+                "offers" => $offerService->getOffersByCriteria($page, $criteria),
+                "count" => $offerService->getCountByCriteria($criteria)
             ];
         }
         return $this->json(
@@ -183,8 +183,8 @@ class OfferController extends AbstractController
             );
 
             $response = [
-                "offers" => $offerService->getOffers($page, $criteria),
-                "count" => $offerService->getCount($criteria)
+                "offers" => $offerService->getOffersByCriteria($page, $criteria),
+                "count" => $offerService->getCountByCriteria($criteria)
             ];
         }
         return $this->json(
