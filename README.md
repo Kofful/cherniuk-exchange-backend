@@ -15,4 +15,12 @@ docker-compose up -d
 ```
 composer install
 ```
+### Make migrations
+```
+docker-compose exec php bin/console doctrine:migrations:migrate
+```
+### Generate keys for jwt
+```
+docker-compose exec php bin/console lexik:jwt:generate-keypair
+```
 ### Enjoy coding!
