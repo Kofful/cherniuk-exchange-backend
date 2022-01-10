@@ -28,15 +28,16 @@ class OfferService
     private UserRepository $userRepository;
 
     public function __construct(
-        OfferRepository $offerRepository,
-        OfferItemRepository $offerItemRepository,
-        OfferStatusRepository $offerStatusRepository,
-        StickerService $stickerService,
+        OfferRepository         $offerRepository,
+        OfferItemRepository     $offerItemRepository,
+        OfferStatusRepository   $offerStatusRepository,
+        StickerService          $stickerService,
         InventoryItemRepository $inventoryItemRepository,
-        StickerRepository $stickerRepository,
-        EntityManagerInterface $entityManager,
-        UserRepository $userRepository
-    ) {
+        StickerRepository       $stickerRepository,
+        EntityManagerInterface  $entityManager,
+        UserRepository          $userRepository
+    )
+    {
         $this->offerRepository = $offerRepository;
         $this->offerItemRepository = $offerItemRepository;
         $this->offerStatusRepository = $offerStatusRepository;
@@ -64,6 +65,13 @@ class OfferService
         $offer->setAcceptItems($acceptItems);
     }
 
+    private function splitAllOffersItems(array $offers): void
+    {
+        foreach ($offers as $offer) {
+            $this->splitOfferItems($offer);
+        }
+    }
+
     private function addItemsToOffer(Offer $offer, array $stickerIds, bool $isAccept): void
     {
         foreach ($stickerIds as $stickerId) {
@@ -77,11 +85,12 @@ class OfferService
     }
 
     public function setCriteria(
-        int $statusId,
+        int  $statusId,
         ?int $userId = null,
         bool $isOwnOffers = false,
         bool $isIncomingOffers = false
-    ): array {
+    ): array
+    {
         $criteria = [
             "status_id" => $statusId
         ];
@@ -112,11 +121,30 @@ class OfferService
             $query["maxCreatorPayment"],
             $query["creatorQuery"]
         );
-        foreach ($offers as $offer) {
-            $this->splitOfferItems($offer);
-        }
+
+        $this->splitAllOffersItems($offers);
 
         return $offers;
+    }
+
+    public function getOffersByCriteria(int $page, array $criteria): array
+    {
+        $offset = ($page - 1) * OfferRepository::OFFER_COUNT_PER_PAGE;
+        $offers = $this->offerRepository->findBy(
+            $criteria,
+            ["created_at" => "ASC"],
+            OfferRepository::OFFER_COUNT_PER_PAGE,
+            $offset
+        );
+
+        $this->splitAllOffersItems($offers);
+
+        return $offers;
+    }
+
+    public function getCountByCriteria(array $criteria): int
+    {
+        return $this->offerRepository->count($criteria);
     }
 
     public function getCount(array $query): int
